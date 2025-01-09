@@ -30,15 +30,13 @@ By leveraging this Logic App, Security Operations Center (SOC) and incident resp
 <br>
 
 ## Post-Deployment
-- Authenticate Microsoft Sentinel and Copilot for Security connectors within the logic app. 
-     - You can chose Oauth, Service principal or Managed identity based authentication for Microsoft Sentinel trigger.
-
-     ![Microsoft Sentinel Authentication](/images/sentinel-trigger-authentication.png) 
-
-     - Chose Client Certificate Auth or Oauth (using user account that can submit prompts) to create connection with Microsoft Copilot for Security logic app connector.
-
-     ![Microsoft Copilot for Security Authentication](/images/copilot-for-security-authentication.png)
-
+- Authenticate Microsoft Sentinel and Copilot for Security connectors within the logic app. You can chose Oauth, Service principal or Managed identity based authentication for Microsoft Sentinel trigger.
+     <br>
+     <img src="https://github.com/pratik-lal/Security-Copilot/blob/SecurityCopilot-Sentinel-Incident-Investigation/Logic%20Apps/SecurityCopilot-Sentinel-Incident-Investigation/images/sentinel-trigger-authentication.png"/></br>
+- Chose Client Certificate Auth or Oauth (using user account that can submit prompts) to create connection with Microsoft Copilot for Security logic app connector.
+     <br>
+     <img src="https://github.com/pratik-lal/Security-Copilot/blob/SecurityCopilot-Sentinel-Incident-Investigation/Logic%20Apps/SecurityCopilot-Sentinel-Incident-Investigation/images/copilot-for-security-authentication.png"/>
+     </br>
 - Automate Sentinel incident investigation by adding the Logic App to Microsoft Sentinel automation rule.
 - Alternatively, this logic app can be called on-demand by righ-clicking on a Sentinel incident, chose **Run Playbook** option. 
 
@@ -60,5 +58,6 @@ By leveraging this Logic App, Security Operations Center (SOC) and incident resp
     - Analysis on incident entities:
     - Possible mitigation steps:
     - Conclusion
-
-    ![Microsoft copilot for Security incident investigation prompt](/images/copilot-for-security-investigation-prompt.png)
+<br>
+<img src="https://github.com/pratik-lal/Security-Copilot/blob/SecurityCopilot-Sentinel-Incident-Investigation/Logic%20Apps/SecurityCopilot-Sentinel-Incident-Investigation/images/copilot-for-security-investigation-prompt.png"/>
+</br>
