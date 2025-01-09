@@ -1,5 +1,5 @@
 Descriptor:
-  Name: HighBlastRaidusInvestigation
+  Name: HighBlastRadiusInvestigation
   DisplayName: Investigate or hunt for anomalous activities performed by high blast radius accounts 
   Description: Uses normalized Insights from Sentinel UEBA to Investigate or hunt for Entra ID Accounts with a High Blast Radius exhibiting anomalous activities
   Settings:
