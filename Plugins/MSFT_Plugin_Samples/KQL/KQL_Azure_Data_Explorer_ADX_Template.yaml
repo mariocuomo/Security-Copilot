@@ -28,7 +28,7 @@ SkillGroups:
 #          - Make sure you exclude named entities that are meant to change from user input (e.g. IP, username, IoCs, etc.) as these will actually lower skill selection probability.     
         Inputs:
           - Name: numberOfRows
-            PlaceholderValue: Number of rows you wish to return from the top (.e.g. 10)
+            PlaceholderValue: Number of rows you wish to return from the top (e.g. 10)
             Description: Number of rows to return from the top
             DefaultValue: 3
             Required: true
