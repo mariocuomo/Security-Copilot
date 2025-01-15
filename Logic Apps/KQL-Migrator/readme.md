@@ -18,7 +18,7 @@ Prior to beginning the installation process, it's crucial to confirm that you ha
   <img src="https://aka.ms/deploytoazurebutton"/>
 </a>
 
-In case you face any deployment issue, you can use the attached Playbook json code file instead and replace the initial default blank azure logic app code view considering the public related blog post documentation in Techcommunity to update the subscription ID, Ressource Group, Workspace Name..etc with your tenant's value and edit the controls connection to be authenticated with you environement settings. 
+you environement settings.
 
 
 ### Post-Deployment Instructions
