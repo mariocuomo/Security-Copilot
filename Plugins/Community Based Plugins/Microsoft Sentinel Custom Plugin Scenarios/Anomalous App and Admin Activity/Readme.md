@@ -1,6 +1,7 @@
 # Security Copilot Custom KQL Plugin - Detect Anomalous App and User Activty using Microsoft Sentinel UEBA Insights
 
-#### Security Copilot Plugin to that brings in data from Microsoft Sentinel UEBA insights focussed on anomalies related to Applications and administrative user activity. For details refer to this blog:
+#### Security Copilot Plugin to that brings in data from Microsoft Sentinel UEBA insights focussed on anomalies related to Applications and administrative user activity. For details refer to this blog: 
+ [link](https://techcommunity.microsoft.com/t5/microsoft-security-copilot-blog/harnessing-the-power-of-kql-plugins-for-enhanced-security/ba-p/4221891)
 
 ### Pre-requisites
 
@@ -25,6 +26,4 @@
 4. [Enter your workspace details in the Security Copilot UI](https://github.com/Azure/Copilot-For-Security/blob/main/Images/KQL Plugin images/Workspacedetails.png)
 
 
-### Plugin Utilization
 
-Refer to the blog in this [link](https://techcommunity.microsoft.com/t5/microsoft-security-copilot-blog/harnessing-the-power-of-kql-plugins-for-enhanced-security/ba-p/4221891)

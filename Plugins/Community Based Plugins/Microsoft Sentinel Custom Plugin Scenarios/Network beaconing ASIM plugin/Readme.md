@@ -21,3 +21,6 @@
 
 Refer to the blog in this [link](https://techcommunity.microsoft.com/blog/securitycopilotblog/leveraging-asim-based-kql-plugins-in-microsoft-security-copilot-for-investigatio/4357680?previewMessage=true)
 
+### Link to blog post
+
+Refer to the blog in this [link](https://techcommunity.microsoft.com/blog/securitycopilotblog/leveraging-asim-based-kql-plugins-in-microsoft-security-copilot-for-investigatio/4357680?previewMessage=true) for more details
