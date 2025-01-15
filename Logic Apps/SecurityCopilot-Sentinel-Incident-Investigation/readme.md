@@ -33,7 +33,7 @@ By leveraging this Logic App, Security Operations Center (SOC) and incident resp
 - Authenticate Microsoft Sentinel and Copilot for Security connectors within the logic app. You can chose Oauth, Service principal or Managed identity based authentication for Microsoft Sentinel trigger.
      <br>
      <img src="https://github.com/pratik-lal/Security-Copilot/blob/SecurityCopilot-Sentinel-Incident-Investigation/Logic%20Apps/SecurityCopilot-Sentinel-Incident-Investigation/images/sentinel-trigger-authentication.png"/></br>
-- Chose Client Certificate Auth or Oauth (using user account that can submit prompts) to create connection with Microsoft Copilot for Security logic app connector.
+- Choose Client Certificate Auth or Oauth (using user account that can submit prompts) to create connection with Microsoft Copilot for Security logic app connector.
      <br>
      <img src="https://github.com/pratik-lal/Security-Copilot/blob/SecurityCopilot-Sentinel-Incident-Investigation/Logic%20Apps/SecurityCopilot-Sentinel-Incident-Investigation/images/copilot-for-security-authentication.png"/>
      </br>
