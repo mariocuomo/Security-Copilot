@@ -38,7 +38,7 @@ By leveraging this Logic App, Security Operations Center (SOC) and incident resp
      <img src="https://github.com/pratik-lal/Security-Copilot/blob/SecurityCopilot-Sentinel-Incident-Investigation/Logic%20Apps/SecurityCopilot-Sentinel-Incident-Investigation/images/copilot-for-security-authentication.png"/>
      </br>
 - Automate Sentinel incident investigation by adding the Logic App to Microsoft Sentinel automation rule.
-- Alternatively, this logic app can be called on-demand by righ-clicking on a Sentinel incident, chose **Run Playbook** option. 
+- Alternatively, this logic app can be called on-demand by right-clicking on a Sentinel incident, choose **Run Playbook** option.
 
 ## Microsoft Copilot for Security skills
 - Following built-in skills are being used to perform investigation on a given incident entity type
