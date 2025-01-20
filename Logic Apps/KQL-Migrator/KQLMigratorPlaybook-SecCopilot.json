@@ -1,150 +1,271 @@
 {
-    "definition": {
-        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
-        "contentVersion": "1.0.0.0",
-        "triggers": {
-            "Recurrence": {
-                "recurrence": {
-                    "interval": 1,
-                    "frequency": "Day"
-                },
-                "evaluatedRecurrence": {
-                    "interval": 1,
-                    "frequency": "Day"
-                },
-                "type": "Recurrence"
+    "$schema":  "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion":  "1.0.0.0",
+    "metadata":  {
+        "title":  "",
+        "description":  "",
+        "prerequisites":  "",
+        "postDeployment":  [
+        ],
+        "prerequisitesDeployTemplateFile":  "",
+        "lastUpdateTime":  "",
+        "entities":  [
+        ],
+        "tags":  [
+        ],
+        "support":  {
+            "tier":  "community",
+            "armtemplate":  "Generated from https://github.com/Azure/Azure-Sentinel/tree/master/Tools/Playbook-ARM-Template-Generator"
+        },
+        "author":  {
+            "name":  ""
+        }
+    },
+    "parameters":  {
+        "PlaybookName":  {
+            "defaultValue":  "KQL-CFS-Migrator",
+            "type":  "string"
+        },
+        "SubscriptionID":  {
+            "type":  "String",
+            "metadata":  {
+                "description":  "Enter value for SubscriptionID"
             }
         },
-        "actions": {
-            "UseCase-Var": {
-                "runAfter": {},
-                "type": "InitializeVariable",
-                "inputs": {
-                    "variables": [
-                        {
-                            "name": "UseCase",
-                            "type": "string"
-                        }
-                    ]
-                }
-            },
-            "Query-Var": {
-                "runAfter": {
-                    "UseCase-Var": [
-                        "Succeeded"
-                    ]
-                },
-                "type": "InitializeVariable",
-                "inputs": {
-                    "variables": [
-                        {
-                            "name": "Query",
-                            "type": "string"
-                        }
-                    ]
-                }
-            },
-            "Get_Watchlist_Items": {
-                "runAfter": {
-                    "Query-Var": [
-                        "Succeeded"
-                    ]
-                },
-                "type": "ApiConnection",
-                "inputs": {
-                    "host": {
-                        "connection": {
-                            "name": "@parameters('$connections')['azuremonitorlogs']['connectionId']"
-                        }
-                    },
-                    "method": "post",
-                    "body": "_GetWatchlist('Yara2Sentinel')",
-                    "path": "/queryData",
-                    "queries": {
-                        "subscriptions": "<subscription-ID>",
-                        "resourcegroups": "<ResourceGroup-Name>",
-                        "resourcetype": "Log Analytics Workspace",
-                        "resourcename": "<SentinelWorkspace-Name>",
-                        "timerange": "@addDays(utcNow(), -10000)"
-                    }
-                }
-            },
-            "Watchlist_For_each_Query": {
-                "foreach": "@body('Get_Watchlist_Items')?['value']",
-                "actions": {
-                    "UseCase-SetVar": {
-                        "type": "SetVariable",
-                        "inputs": {
-                            "name": "UseCase",
-                            "value": "@items('Watchlist_For_each_Query')['UseCase']"
-                        }
-                    },
-                    "Query-SetVar": {
-                        "runAfter": {
-                            "UseCase-SetVar": [
-                                "Succeeded"
-                            ]
-                        },
-                        "type": "SetVariable",
-                        "inputs": {
-                            "name": "Query",
-                            "value": "@items('Watchlist_For_each_Query')['Yara']"
-                        }
-                    },
-                    "Run_a_Security_Copilot_promptbook_1": {
-                        "runAfter": {
-                            "Query-SetVar": [
-                                "Succeeded"
-                            ]
-                        },
-                        "type": "ApiConnection",
-                        "inputs": {
-                            "host": {
-                                "connection": {
-                                    "name": "@parameters('$connections')['securitycopilot']['connectionId']"
-                                }
-                            },
-                            "method": "post",
-                            "body": {
-                                "PromptbookId": "<PromptBook-ID>",
-                                "PromptbookInputs": {
-                                    "YARAQuery": "@variables('Query')"
-                                }
-                            },
-                            "path": "/run-promptbook"
-                        }
-                    }
-                },
-                "runAfter": {
-                    "Get_Watchlist_Items": [
-                        "Succeeded"
-                    ]
-                },
-                "type": "Foreach"
+        "Resourcegroup":  {
+            "type":  "String",
+            "metadata":  {
+                "description":  "Enter value for Resourcegroup"
             }
         },
-        "outputs": {},
-        "parameters": {
-            "$connections": {
-                "type": "Object",
-                "defaultValue": {}
+        "Resourcename":  {
+            "type":  "String",
+            "metadata":  {
+                "description":  "Enter value for Resourcename"
             }
         }
     },
-    "parameters": {
-        "$connections": {
-            "value": {
-                "azuremonitorlogs": {
-                    "id": "/subscriptions/<subscription-ID>/providers/Microsoft.Web/locations/westeurope/managedApis/",
-                    "connectionId": "/subscriptions/<subscription-ID>/resourceGroups/<ResourceGroup-Name>/providers/Microsoft.Web/connections/",
-                    "connectionName": "azuremonitorlogs-1"
+    "variables":  {
+        "AzuremonitorlogsConnectionName":  "[concat('Azuremonitorlogs-', parameters('PlaybookName'))]",
+        "SecuritycopilotConnectionName":  "[concat('Securitycopilot-', parameters('PlaybookName'))]"
+    },
+    "resources":  [
+        {
+            "properties":  {
+                "provisioningState":  "Succeeded",
+                "state":  "Disabled",
+                "definition":  {
+                    "$schema":  "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion":  "1.0.0.0",
+                    "parameters":  {
+                        "$connections":  {
+                            "defaultValue":  {
+                            },
+                            "type":  "Object"
+                        },
+                        "SubscriptionID":  {
+                            "defaultValue":  "[parameters('SubscriptionID')]",
+                            "type":  "String"
+                        },
+                        "Resourcegroup":  {
+                            "defaultValue":  "[parameters('Resourcegroup')]",
+                            "type":  "String"
+                        },
+                        "Resourcename":  {
+                            "defaultValue":  "[parameters('Resourcename')]",
+                            "type":  "String"
+                        }
+                    },
+                    "triggers":  {
+                        "Recurrence":  {
+                            "recurrence":  {
+                                "interval":  1,
+                                "frequency":  "Day"
+                            },
+                            "evaluatedRecurrence":  {
+                                "interval":  1,
+                                "frequency":  "Day"
+                            },
+                            "type":  "Recurrence"
+                        }
+                    },
+                    "actions":  {
+                        "UseCase-Var":  {
+                            "runAfter":  {
+                            },
+                            "type":  "InitializeVariable",
+                            "inputs":  {
+                                "variables":  [
+                                    {
+                                        "name":  "UseCase",
+                                        "type":  "string"
+                                    }
+                                ]
+                            }
+                        },
+                        "Query-Var":  {
+                            "runAfter":  {
+                                "UseCase-Var":  [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type":  "InitializeVariable",
+                            "inputs":  {
+                                "variables":  [
+                                    {
+                                        "name":  "Query",
+                                        "type":  "string"
+                                    }
+                                ]
+                            }
+                        },
+                        "Get_Watchlist_Items":  {
+                            "runAfter":  {
+                                "Query-Var":  [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type":  "ApiConnection",
+                            "inputs":  {
+                                "host":  {
+                                    "connection":  {
+                                        "name":  "@parameters('$connections')['azuremonitorlogs']['connectionId']"
+                                    }
+                                },
+                                "method":  "post",
+                                "body":  "_GetWatchlist('AQLTOKQL')",
+                                "path":  "/queryData",
+                                "queries":  {
+                                    "subscriptions":  "@parameters('SubscriptionID')",
+                                    "resourcegroups":  "@parameters('Resourcegroup')",
+                                    "resourcetype":  "Log Analytics Workspace",
+                                    "resourcename":  "@parameters('Resourcename')",
+                                    "timerange":  "@addDays(utcNow(),-10000)"
+                                }
+                            }
+                        },
+                        "For_each":  {
+                            "foreach":  "@body('Get_Watchlist_Items')?['value']",
+                            "actions":  {
+                                "UseCase-Set_variable":  {
+                                    "type":  "SetVariable",
+                                    "inputs":  {
+                                        "name":  "UseCase",
+                                        "value":  "@items('For_each')['UseCase']"
+                                    }
+                                },
+                                "Query-Set_variable":  {
+                                    "runAfter":  {
+                                        "UseCase-Set_variable":  [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    "type":  "SetVariable",
+                                    "inputs":  {
+                                        "name":  "Query",
+                                        "value":  "@items('For_each')['AQL']"
+                                    }
+                                },
+                                "KQL_MIgrator_Prompt_book":  {
+                                    "runAfter":  {
+                                        "Query-Set_variable":  [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    "type":  "ApiConnection",
+                                    "inputs":  {
+                                        "host":  {
+                                            "connection":  {
+                                                "name":  "@parameters('$connections')['securitycopilot']['connectionId']"
+                                            }
+                                        },
+                                        "method":  "post",
+                                        "body":  {
+                                            "PromptbookId":  "5a846832-ae56-48ff-b625-5b70174b55fd",
+                                            "PromptbookInputs":  {
+                                                "inputQuery":  "@variables('Query')"
+                                            }
+                                        },
+                                        "path":  "/run-promptbook"
+                                    }
+                                }
+                            },
+                            "runAfter":  {
+                                "Get_Watchlist_Items":  [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type":  "Foreach"
+                        }
+                    },
+                    "outputs":  {
+                    }
                 },
-                "securitycopilot": {
-                    "id": "/subscriptions/<subscription-ID>/providers/Microsoft.Web/locations/westeurope/managedApis/securitycopilot",
-                    "connectionId": "/subscriptions/<subscription-ID>/resourceGroups/<ResourceGroup-Name>/providers/Microsoft.Web/connections/securitycopilot",
-                    "connectionName": "securitycopilot"
+                "parameters":  {
+                    "$connections":  {
+                        "value":  {
+                            "azuremonitorlogs":  {
+                                "connectionId":  "[resourceId('Microsoft.Web/connections', variables('AzuremonitorlogsConnectionName'))]",
+                                "connectionName":  "[variables('AzuremonitorlogsConnectionName')]",
+                                "id":  "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/Azuremonitorlogs')]"
+                            },
+                            "securitycopilot":  {
+                                "connectionId":  "[resourceId('Microsoft.Web/connections', variables('SecuritycopilotConnectionName'))]",
+                                "connectionName":  "[variables('SecuritycopilotConnectionName')]",
+                                "id":  "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/Securitycopilot')]"
+                            }
+                        }
+                    }
+                }
+            },
+            "name":  "[parameters('PlaybookName')]",
+            "type":  "Microsoft.Logic/workflows",
+            "location":  "[resourceGroup().location]",
+            "tags":  {
+                "CreatedDate":  "12/18/2024 1:05:02 PM",
+                "Created By":  "Hesham Abdelaal",
+                "CreatorUPN":  "",
+                "hidden-SentinelTemplateName":  "KQL-CFS-Migrator",
+                "hidden-SentinelTemplateVersion":  "1.0"
+            },
+            "identity":  {
+                "type":  "SystemAssigned"
+            },
+            "apiVersion":  "2017-07-01",
+            "dependsOn":  [
+                "[resourceId('Microsoft.Web/connections', variables('AzuremonitorlogsConnectionName'))]",
+                "[resourceId('Microsoft.Web/connections', variables('SecuritycopilotConnectionName'))]"
+            ]
+        },
+        {
+            "type":  "Microsoft.Web/connections",
+            "apiVersion":  "2016-06-01",
+            "name":  "[variables('AzuremonitorlogsConnectionName')]",
+            "location":  "[resourceGroup().location]",
+            "kind":  "V1",
+            "properties":  {
+                "displayName":  "[variables('AzuremonitorlogsConnectionName')]",
+                "customParameterValues":  {
+                },
+                "api":  {
+                    "id":  "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/Azuremonitorlogs')]"
+                }
+            }
+        },
+        {
+            "type":  "Microsoft.Web/connections",
+            "apiVersion":  "2016-06-01",
+            "name":  "[variables('SecuritycopilotConnectionName')]",
+            "location":  "[resourceGroup().location]",
+            "kind":  "V1",
+            "properties":  {
+                "displayName":  "[variables('SecuritycopilotConnectionName')]",
+                "customParameterValues":  {
+                },
+                "api":  {
+                    "id":  "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/Securitycopilot')]"
                 }
             }
         }
-    }
+    ]
 }
