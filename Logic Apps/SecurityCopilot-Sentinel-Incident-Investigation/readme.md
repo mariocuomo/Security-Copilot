@@ -51,7 +51,7 @@ By leveraging this Logic App, Security Operations Center (SOC) and incident resp
 | IP address | AbuseIPDB |
 
 
-## Incident Inventigation Template
+## Incident Investigation Template
 - Automated incident investigation summary is structured in following order. Modify the prompt to re-order or change the investigation template.
     - Incident overview:
     - Incident description:
