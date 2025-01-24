@@ -1,6 +1,6 @@
 # Security Copilot Plugin: Leveraging Security Copilot with ASIM-based KQL plugins for investigation scenarios
 
-### **Bring in insights from Microsoft Sentinel using source-agnostic queries based on ASIM - Advanced Security Informatoin Model **
+### **Bring in insights from Microsoft Sentinel using source-agnostic queries based on ASIM - Advanced Security Information Model**
 
 ### Pre-requisites
 
@@ -19,8 +19,4 @@
 
 ### Link to blog post
 
-Refer to the blog in this [link](https://techcommunity.microsoft.com/blog/securitycopilotblog/leveraging-asim-based-kql-plugins-in-microsoft-security-copilot-for-investigatio/4357680?previewMessage=true)
-
-### Link to blog post
-
-Refer to the blog in this [link](https://techcommunity.microsoft.com/blog/securitycopilotblog/leveraging-asim-based-kql-plugins-in-microsoft-security-copilot-for-investigatio/4357680?previewMessage=true) for more details
+Refer to the blog in this [link](https://techcommunity.microsoft.com/blog/securitycopilotblog/leveraging-asim-based-kql-plugins-in-microsoft-security-copilot-for-investigatio/4
