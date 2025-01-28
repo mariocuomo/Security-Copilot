@@ -46,6 +46,5 @@ This plugin shows how to retrieve comments associated with a Sentinel Incident t
 
 ## SCREENSHOTS
 <div align="center">
-  <img src="https://github.com/Azure/Security-Copilot/tree/main/Images/Community%20Plugins/DefenderDailyOperations/GetLatestEmailsByRecipient.png" width="700"> </img>
-  <img src="https://github.com/Azure/Security-Copilot/tree/main/Images/Community%20Plugins/DefenderDailyOperations/GetDefenderDevices.png" width="700"> </img>
+  <img src="https://github.com/mariocuomo/Security-Copilot/blob/main/Images/Community%20Plugins/SentinelIncidentComments/SentinelIncidentComments.png" width="700"> </img>
 </div>
