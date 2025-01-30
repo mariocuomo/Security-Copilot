@@ -1,22 +1,19 @@
-**Defender Incident Investigation**
+# Defender Incident Investigation
 
-\------------------------------------------------------------------------------------------------------------------------------------
 
-**DESCRIPTION**
+## DESCRIPTION
 
 The two custom plugins, "Custom Plugin Defender Device Investigation" and "Custom Plugin Defender Device Info," provide a range of Security Copilot skills to support device investigation and hunting within Microsoft Defender XDR.
 
-\------------------------------------------------------------------------------------------------------------------------------------
 
-**TYPE AND REQUIREMENTS**
+## TYPE AND REQUIREMENTS
 
-- **TYPE**: KQL (Defender)
-- **SOURCE**: Defender for Endpoint schema tables
-- **REQUIREMENTS**: Access to Defender XDR
+- ### TYPE: KQL (Defender)
+- ### SOURCE: Defender for Endpoint schema tables
+- ### REQUIREMENTS: Access to Defender XDR
 
-\------------------------------------------------------------------------------------------------------------------------------------
 
-**The “Custom Plugin Defender Device Investigation” provides the following skills:**
+## The “Custom Plugin Defender Device Investigation” provides the following skills:
 
 Title: **File - Files Downloaded**
 
@@ -106,7 +103,7 @@ Title: **Suspicious Activities - Device Tampering Attempts**
 
 - Description: Possible tampering attempts on this device in the past 7 days.
 
-**The “Custom Plugin Defender Device Info” offers specific device information often needed during an investigation. Its skills include:**
+## The “Custom Plugin Defender Device Info” offers specific device information often needed during an investigation. Its skills include:
 
 Title: **Device OS Information**
 
