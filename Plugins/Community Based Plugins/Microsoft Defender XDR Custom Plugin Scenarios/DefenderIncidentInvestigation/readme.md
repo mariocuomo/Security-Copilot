@@ -108,7 +108,7 @@ Title: **Suspicious Activities - Device Tampering Attempts**
 
 <br>
 
-## The “Custom Plugin Defender Device Info” offers specific device information often needed during an investigation. Its skills include:
+## The “Custom Plugin Defender Device Info” offers the following skills:
 
 Title: **Device OS Information**
 
