@@ -8,9 +8,9 @@ The two custom plugins, "Custom Plugin Defender Device Investigation" and "Custo
 
 ## TYPE AND REQUIREMENTS
 
-- ### TYPE: KQL (Defender)
-- ### SOURCE: Defender for Endpoint schema tables
-- ### REQUIREMENTS: Access to Defender XDR
+- **TYPE**: KQL (Defender)
+- **SOURCE**: Defender for Endpoint schema tables
+- **REQUIREMENTS**: Access to Defender XDR
 
 
 ## The “Custom Plugin Defender Device Investigation” provides the following skills:
