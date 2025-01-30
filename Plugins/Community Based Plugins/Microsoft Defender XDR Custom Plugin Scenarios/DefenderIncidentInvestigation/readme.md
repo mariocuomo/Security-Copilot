@@ -1,10 +1,12 @@
 # Defender Incident Investigation
 
+<br>
 
 ## DESCRIPTION
 
 The two custom plugins, "Custom Plugin Defender Device Investigation" and "Custom Plugin Defender Device Info," provide a range of Security Copilot skills to support device investigation and hunting within Microsoft Defender XDR.
 
+<br>
 
 ## TYPE AND REQUIREMENTS
 
@@ -12,6 +14,7 @@ The two custom plugins, "Custom Plugin Defender Device Investigation" and "Custo
 - **SOURCE**: Defender for Endpoint schema tables
 - **REQUIREMENTS**: Access to Defender XDR
 
+<br>
 
 ## The “Custom Plugin Defender Device Investigation” provides the following skills:
 
@@ -102,6 +105,8 @@ Title: **Suspicious Activities - Network Protection Events**
 Title: **Suspicious Activities - Device Tampering Attempts**
 
 - Description: Possible tampering attempts on this device in the past 7 days.
+
+<br>
 
 ## The “Custom Plugin Defender Device Info” offers specific device information often needed during an investigation. Its skills include:
 
