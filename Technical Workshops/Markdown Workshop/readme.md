@@ -6,8 +6,7 @@
 
 This workshop is designed to help you get up to speed with Microsoft Security Copilot. It offers hands-on experience in using Markdown, which can significantly enhance how our Large Language Models (LLMs) reason through data and format the results you receive.
 
-## Reccomendations
-
+## Recommendations
 It's highly recommended that you review the following two pages prior to starting these modules.
  - [Prompting in Microsoft Security Copilot](https://learn.microsoft.com/en-us/copilot/security/prompting-security-copilot)
  - [Create effective prompts](https://learn.microsoft.com/en-us/copilot/security/prompting-tips)
