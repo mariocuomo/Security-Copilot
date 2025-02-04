@@ -86,7 +86,7 @@ Given the speed of change within Security Copilot, the best way to visualize whi
 Please note that the standalone instance of Security Copilot currently does not support rendering all Markdown syntax elements (e.g., certain headings and images). While you can still include these elements in your prompts, the output will need to be processed and rendered by another service.
 
 ```
-/AskGPT Assume the role of a Markdown syntax expert. Provide a comprehensive list of Markdown syntax elements that include elements such as tables and numbered lists, task lists, horizontal rules. For each element, provide instructions on how I can replicate them myself and what it would look like when rendered. 
+/AskGPT Assume the role of a Markdown syntax expert. Provide a comprehensive list of Markdown syntax elements, including tables, numbered lists, task lists, and horizontal rules. For each element, provide instructions on how I can replicate them myself and what it would look like when rendered.
 ```
 For the official Markdown specification visit [CommonMark](https://commonmark.org/help/)
 
