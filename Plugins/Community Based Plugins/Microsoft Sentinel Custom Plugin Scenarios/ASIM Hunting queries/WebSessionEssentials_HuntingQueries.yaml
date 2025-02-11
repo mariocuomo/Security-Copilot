@@ -1,0 +1,390 @@
+Descriptor:
+  Name: Web Session Essentials - Hunting Queries (ASIM) 
+  DisplayName: Web Session Essentials - ASIM  (Preview)
+  Description: identifies suspicious network behavior based on various data sources ingested in Sentinel. The solution contains queries to detect common network-based attacks - things like malicious user agents, mining pools, Base64 encoded IPv4 address in request URL etc.
+  Settings:
+    - Name: TenantId
+      Required: true
+    - Name: WorkspaceName
+      Required: true
+    - Name: SubscriptionId
+      Required: true
+    - Name: ResourceGroupName
+      Required: true
+  SupportedAuthTypes:
+    - None
+
+SkillGroups:
+  - Format: KQL
+    Skills:
+      - Name: Empty User Agent Detected (ASIM Web Session)
+        DisplayName: Empty User Agent Detected (ASIM Web Session)(Preview)
+        Description: This rule helps to identify instances of empty user agent requests originating from IP addresses that have previously reported user agent at least once within the same time period.
+        Settings:
+          Target: Sentinel
+          # The ID of the AAD Organization that the Sentinel workspace is in.
+          TenantId: '{{TenantId}}'
+          # The id of the Azure Subscription that the Sentinel workspace is in.
+          SubscriptionId: '{{SubscriptionId}}'
+          # The name of the Resource Group that the Sentinel workspace is in.
+          ResourceGroupName: '{{ResourceGroupName}}'
+          # The name of the Sentinel workspace.
+          WorkspaceName: '{{WorkspaceName}}'
+          # This query detects potential network beaconing activity
+          Template: |-
+                let lookBack = 1d;
+                let WebData =
+                    _Im_WebSession(starttime=ago(lookBack), eventresult='Success')
+                    | where isempty(HttpUserAgent) and isnotempty( SrcIpAddr)
+                    | summarize
+                        EventCount=count(),
+                        EventStartTime=min(TimeGenerated),
+                        EventEndTime=max(TimeGenerated)
+                        by SrcIpAddr, SrcUsername, SrcHostname, Url, DstIpAddr, DstPortNumber;
+                WebData
+                | join kind=inner (_Im_WebSession(starttime=ago(lookBack), eventresult='Success')
+                    | project HttpUserAgent, SrcIpAddr
+                    | where isnotempty(HttpUserAgent) and isnotempty( SrcIpAddr)
+                    | summarize FoundUserAgents=make_set(HttpUserAgent,100) by SrcIpAddr
+                    )
+                    on SrcIpAddr
+                | extend
+                    Name = iif(SrcUsername contains "@", tostring(split(SrcUsername, '@', 0)[0]), SrcUsername),
+                    UPNSuffix = iif(SrcUsername contains "@", tostring(split(SrcUsername, '@', 1)[0]), "")
+                | project-away SrcIpAddr1
+                | order by EventCount desc
+                | extend IP_0_Address = SrcIpAddr
+                | extend IP_1_Address = DstIpAddr
+                | extend Account_0_Name = Name
+                | extend Account_0_UPNSuffix = UPNSuffix
+                | extend URL_0_Url = Url
+                | extend Host_0_HostName = SrcHostname
+  - Format: KQL
+    Skills:
+      - Name: Excessive number of forbidden requests detected (ASIM Web Session)
+        DisplayName: Excessive number of forbidden requests detected (ASIM Web Session) (Preview)
+        Description: T
+        Settings:
+          Target: Sentinel
+          # The ID of the AAD Organization that the Sentinel workspace is in.
+          TenantId: '{{TenantId}}'
+          # The id of the Azure Subscription that the Sentinel workspace is in.
+          SubscriptionId: '{{SubscriptionId}}'
+          # The name of the Resource Group that the Sentinel workspace is in.
+          ResourceGroupName: '{{ResourceGroupName}}'
+          # The name of the Sentinel workspace.
+          WorkspaceName: '{{WorkspaceName}}'
+          # This query detects potential network beaconing activity
+          Template: |-
+                // Please refer this for more details: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+                let threshold=100; // Update threshold as per your environment
+                let lookBack = 1d;
+                let ErrorCode=dynamic([403]);
+                _Im_WebSession(starttime=ago(lookBack))
+                | where EventResultDetails in~ (ErrorCode)
+                | summarize ErrorCount = count(), EventStartTime= min(TimeGenerated), EventEndTime=max(TimeGenerated), Urls=make_set(Url,100) by SrcIpAddr, SrcUsername, SrcHostname, DstIpAddr
+                | where ErrorCount > threshold
+                | extend Name = iif(SrcUsername contains "@", tostring(split(SrcUsername,'@',0)[0]),SrcUsername), UPNSuffix = iif(SrcUsername contains "@",tostring(split(SrcUsername,'@',1)[0]),"")
+                | order by ErrorCount desc
+                | extend IP_0_Address = SrcIpAddr
+                | extend IP_1_Address = DstIpAddr
+                | extend Host_0_HostName = SrcHostname
+                | extend Account_0_Name = Name
+                | extend Account_0_UPNSuffix = UPNSuffix
+  - Format: KQL
+    Skills:
+      - Name: Detect IP Address in the requested URL (ASIM Web Session)
+        DisplayName: Detect IP Address in the requested URL (ASIM Web Session) (Preview)
+        Description: This rule detects IPAddress in the requested URL
+        Settings:
+          Target: Sentinel
+          # The ID of the AAD Organization that the Sentinel workspace is in.
+          TenantId: '{{TenantId}}'
+          # The id of the Azure Subscription that the Sentinel workspace is in.
+          SubscriptionId: '{{SubscriptionId}}'
+          # The name of the Resource Group that the Sentinel workspace is in.
+          ResourceGroupName: '{{ResourceGroupName}}'
+          # The name of the Sentinel workspace.
+          WorkspaceName: '{{WorkspaceName}}'
+          # This query detects potential network beaconing activity
+          Template: |-
+            let lookback = 1d;
+            // IPAddress Regex Pattern
+            let PlainText_IPv4_Regex_Pattern = @"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b";
+            // Identified base64 encoded IPv4 addresses
+            let ipv4_encoded_identification_regex = @"\=([a-zA-Z0-9\/\+]*(?:(?:MC|Au|wL|MS|Eu|xL|Mi|Iu|yL|My|Mu|zL|NC|Qu|0L|NS|Uu|1L|Ni|Yu|2L|Ny|cu|3L|OC|gu|4L|OS|ku|5L){1}[a-zA-Z0-9\/\+]{2,4}){3}[a-zA-Z0-9\/\+\=]*)";
+            // Extractes IPv4 addresses as hex values
+            let ipv4_decoded_hex_extract = @"((?:(?:61|62|63|64|65|66|67|68|69|6a|6b|6c|6d|6e|6f|70|71|72|73|74|75|76|77|78|79|7a|41|42|43|44|45|46|47|48|49|4a|4b|4c|4d|4e|4f|50|51|52|53|54|55|56|57|58|59|5a|2f|2b|3d),){6,14}(?:61|62|63|64|65|66|67|68|69|6a|6b|6c|6d|6e|6f|70|71|72|73|74|75|76|77|78|79|7a|41|42|43|44|45|46|47|48|49|4a|4b|4c|4d|4e|4f|50|51|52|53|54|55|56|57|58|59|5a|2f|2b|3d))";
+            let ipV4_FromPlainString = _Im_WebSession(starttime=ago(lookback), eventresult='Success')
+            | where Url matches regex PlainText_IPv4_Regex_Pattern and not(ipv4_is_private(DstIpAddr)) // take URLs containing IPV4 address and the requests going to internet
+            | project TimeGenerated, Url, SrcIpAddr, SrcUsername, SrcHostname
+            | extend ip_candidate = extract(PlainText_IPv4_Regex_Pattern, 0, Url)
+            | summarize EventEndTime = max(TimeGenerated), EventStartTime = min(TimeGenerated), Urls=tostring(make_set(Url,100)) by ip_candidate, SrcIpAddr, SrcUsername, SrcHostname;
+            let ipV4_FromEncodedString = _Im_WebSession(starttime=ago(lookback), eventresult='Success')
+            // Identify requests with encoded IPv4 addresses
+            | where Url matches regex ipv4_encoded_identification_regex and not(ipv4_is_private(DstIpAddr)) // take URLs containing encoded IPV4 address and the requests going to internet
+            | project TimeGenerated, Url, SrcIpAddr, SrcUsername, SrcHostname
+            // Extract IP candidates in their base64 encoded format, significantly reducing the dataset
+            | extend extracted_encoded_ip_candidate = extract_all(ipv4_encoded_identification_regex, Url)
+            // We could have more than one candidate, expand them out
+            | mv-expand extracted_encoded_ip_candidate to typeof(string)
+            | summarize EventStartTime=min(TimeGenerated), EventEndTime=max(TimeGenerated), make_set(Url,100) by extracted_encoded_ip_candidate, SrcIpAddr, SrcUsername, SrcHostname
+            // Pad if we need to
+            | extend extracted_encoded_ip_candidate = iff(strlen(extracted_encoded_ip_candidate) % 2 == 0, extracted_encoded_ip_candidate, strcat(extracted_encoded_ip_candidate, "="))
+            // Now decode the candidate to a long array, we cannot go straight to string as it cannot handle non-UTF8, we need to strip that first
+            | extend extracted_encoded_ip_candidate = tostring(base64_decode_toarray(extracted_encoded_ip_candidate))
+            // Extract the IP candidates from the array
+            | extend hex_extracted = extract_all(ipv4_decoded_hex_extract, extracted_encoded_ip_candidate)
+            // Expand, it's still possible that we might have more than 1 IP
+            | mv-expand hex_extracted
+            // Now we should have a clean string. We need to put it back into a dynamic array to convert back to a string.
+            | extend hex_extracted = trim_end(",", tostring(hex_extracted))
+            | extend hex_extracted = strcat("[", hex_extracted, "]")
+            | extend hex_extracted = todynamic(hex_extracted)
+            // Convert the array back into a string
+            | extend decoded_ip_candidate = unicode_codepoints_to_string(hex_extracted)
+            | where decoded_ip_candidate matches regex PlainText_IPv4_Regex_Pattern
+            | summarize by ip_candidate=decoded_ip_candidate, Urls=tostring(set_Url), EventStartTime, EventEndTime, SrcIpAddr, SrcUsername, SrcHostname;
+            union ipV4_FromPlainString,ipV4_FromEncodedString
+            | extend Name = iif(SrcUsername contains "@", tostring(split(SrcUsername,'@',0)[0]),SrcUsername), UPNSuffix = iif(SrcUsername contains "@",tostring(split(SrcUsername,'@',1)[0]),"")
+            | extend IP_0_Address = SrcIpAddr
+            | extend IP_1_Address = ip_candidate
+            | extend Account_0_Name = Name
+            | extend Account_0_UPNSuffix = UPNSuffix
+            | extend Host_0_HostName = SrcHostname
+  - Format: KQL
+    Skills:
+      - Name: Detect Kali Linux UserAgent (ASIM Web Session)
+        DisplayName: Detect Kali Linux UserAgent (ASIM Web Session) (Preview)
+        Description: This rule helps to detect usage of Kali Linux in your environment. Attackers might utilize Kali Linux's tools and features for unauthorized penetration testing, reconnaissance, or exploitation attempts.
+        Settings:
+          Target: Sentinel
+          # The ID of the AAD Organization that the Sentinel workspace is in.
+          TenantId: '{{TenantId}}'
+          # The id of the Azure Subscription that the Sentinel workspace is in.
+          SubscriptionId: '{{SubscriptionId}}'
+          # The name of the Resource Group that the Sentinel workspace is in.
+          ResourceGroupName: '{{ResourceGroupName}}'
+          # The name of the Sentinel workspace.
+          WorkspaceName: '{{WorkspaceName}}'
+          # This query detects potential network beaconing activity
+          Template: |-
+                let lookback = 1d;
+                _Im_WebSession (starttime=ago(lookback))
+                | project HttpUserAgent, SrcIpAddr, SrcUsername, SrcHostname, Url, TimeGenerated
+                | where HttpUserAgent has_all ("Linux", "Kali")
+                | summarize EventCount=count(), EventStartTime=min(TimeGenerated), EventEndTime = max(TimeGenerated), URLs = make_set(Url,100) by HttpUserAgent, SrcIpAddr, SrcUsername, SrcHostname
+                | extend Name = iif(SrcUsername contains "@", tostring(split(SrcUsername,'@',0)[0]),SrcUsername), UPNSuffix = iif(SrcUsername contains "@",tostring(split(SrcUsername,'@',1)[0]),"")
+                | order by EventCount desc
+                | extend IP_0_Address = SrcIpAddr
+                | extend Account_0_Name = Name
+                | extend Account_0_UPNSuffix = UPNSuffix
+                | extend Host_0_HostName = SrcHostname
+  - Format: KQL
+    Skills:
+      - Name: Beaconing traffic based on common user agents visiting limited number of domains (ASIM Web Session)
+        DisplayName: Beaconing traffic based on common user agents visiting limited number of domains (ASIM Web Session)(Preview)
+        Description: This query searches web proxy logs for a specific type of beaconing behavior by caparing with a known request pattern
+        Settings:
+          Target: Sentinel
+          # The ID of the AAD Organization that the Sentinel workspace is in.
+          TenantId: '{{TenantId}}'
+          # The id of the Azure Subscription that the Sentinel workspace is in.
+          SubscriptionId: '{{SubscriptionId}}'
+          # The name of the Resource Group that the Sentinel workspace is in.
+          ResourceGroupName: '{{ResourceGroupName}}'
+          # The name of the Sentinel workspace.
+          WorkspaceName: '{{WorkspaceName}}'
+          # This query detects potential network beaconing activity
+          Template: |-
+                let timeframe = 1d; // Timeframe during which to search for beaconing behavior.
+                let lookback = 7d; // lookback period to find if browser was used for other domains by user.
+                let min_requests = 50; // Minimum number of requests to consider it beacon traffic.
+                let min_hours=8; // Minimum number of different hours during which connections were made to consider it beacon traffic.
+                let trusted_user_count=10; // If visited by these many users a domain is considered 'trusted'.
+                let Total_Visited_Sites=3; // Number of different sites visited using this user-agent.
+                // Client-specific query to obtain 'browser-like' traffic from proxy logs.
+                let BrowserTraffic = materialize (
+                _Im_WebSession(starttime=ago(timeframe))
+                | project  TimeGenerated, DestHostname = tostring(parse_url(Url)["Host"]), HttpUserAgent, SrcIpAddr, DstIpAddr
+                | where not(ipv4_is_private(DstIpAddr)) // Take only those requests that are going to internet
+                | where HttpUserAgent has_any ("Mozilla","Gecko")
+                );
+                let CommonDomains = BrowserTraffic
+                | summarize source_count=dcount(SrcIpAddr) by DestHostname
+                | where source_count > trusted_user_count
+                | project DestHostname; // These are list of common domains that we will filter out.  
+                let CommonUA = BrowserTraffic
+                | summarize source_count=dcount(SrcIpAddr), dhost_count=dcount(DestHostname) by HttpUserAgent
+                | where source_count >trusted_user_count and dhost_count > 100 // Normal browsers are used by many people visiting many different sites.
+                | project HttpUserAgent;
+                // Some users only use the browsers to visit a very limited set of sites.
+                // These are considered suspicious, since they might be an attacker masquerading a beacon as a legitimate browser.
+                let SuspiciousClients = BrowserTraffic
+                | where HttpUserAgent in (CommonUA)
+                | summarize Destination_Hosts = make_set(DestHostname,100), request_count=count() by HttpUserAgent, SrcIpAddr
+                | where array_length(Destination_Hosts) <=Total_Visited_Sites and request_count >= min_requests
+                | project HttpUserAgent, SrcIpAddr, Destination_Hosts;
+                // Just reporting on suspicious browsers gives too many false positives.
+                // For example, users that have the browser open on the login screen of 1 specific application.
+                // In the suspicious browsers we can search for 'beacon-like' behavior.
+                // Get all browser traffic by the suspicious browsers.
+                let PotentialBeaconingTraffic=SuspiciousClients
+                | join kind=inner (BrowserTraffic) on HttpUserAgent, SrcIpAddr
+                // Find beaconing-like traffic - i.e. contacting the same host in many different hours.
+                | summarize hour_count=dcount(bin(TimeGenerated,1h)), Destination_Hosts=take_any(Destination_Hosts), request_count=count() by HttpUserAgent, SrcIpAddr, DestHostname
+                | where hour_count >=min_hours and request_count >= min_requests 
+                // Remove common domains i.e. visited by atleast trusted_user_count number of users.
+                | join kind=leftanti CommonDomains on DestHostname // leftanti=> Returns all the records from the left side that don't have matches from the right
+                | summarize RareHosts=make_set(DestHostname,100), TotalRequestCount=sum(request_count), BrowserHosts=take_any(Destination_Hosts) by HttpUserAgent, SrcIpAddr
+                // Remove browsers that visit any common domains.
+                | where array_length(RareHosts) == array_length(BrowserHosts);
+                // Look back for X days to see if the browser was not used to visit more hosts.
+                // This is to exclude someone that started up the browser a long time ago, and left only a single tab open
+                PotentialBeaconingTraffic
+                | join kind=inner (_Im_WebSession(starttime=lookback)
+                | project  TimeGenerated, DestHostname = tostring(parse_url(Url)["Host"]), HttpUserAgent, SrcIpAddr, DstIpAddr
+                | where not(ipv4_is_private(DstIpAddr)) // Take only those requests that are going to internet
+                | where HttpUserAgent has_any ("Mozilla","Gecko")
+                ) on SrcIpAddr, HttpUserAgent
+                | summarize RareHosts=take_any(RareHosts),BrowserHosts1d=take_any(BrowserHosts),BrowserHostsLookback=make_set(DestHostname,100) by SrcIpAddr, HttpUserAgent
+                | where array_length(RareHosts) == array_length(BrowserHostsLookback)
+                | extend IP_0_Address = SrcIpAddr
+  - Format: KQL
+    Skills:
+      - Name: Potential beaconing detected - Similar sent bytes (ASIM Web Session)
+        DisplayName: Potential beaconing detected - Similar sent bytes (ASIM Web Session) (Preview)
+        Description:  The presence of a high count of repetitive identical SrcBytes could potentially indicate beaconing activity.
+        Settings:
+          Target: Sentinel
+          # The ID of the AAD Organization that the Sentinel workspace is in.
+          TenantId: '{{TenantId}}'
+          # The id of the Azure Subscription that the Sentinel workspace is in.
+          SubscriptionId: '{{SubscriptionId}}'
+          # The name of the Resource Group that the Sentinel workspace is in.
+          ResourceGroupName: '{{ResourceGroupName}}'
+          # The name of the Sentinel workspace.
+          WorkspaceName: '{{WorkspaceName}}'
+          # This query detects potential network beaconing activity
+          Template: |-
+                let lookback = 1d;
+                let TotalEventsThreshold = 25; // Minimum events expected in 1 day. Assuming atleast 25 events.
+                _Im_WebSession(starttime=ago(lookback), eventresult='Success')
+                | where isnotempty(SrcIpAddr) and isnotempty(DstIpAddr) and isnotempty(SrcBytes)
+                | summarize
+                    EventCount = count(),
+                    make_set(TimeGenerated, 10000),
+                    EventStartTime=min(TimeGenerated),
+                    EventEndTime=max(TimeGenerated)
+                    by SrcIpAddr, DstIpAddr, DstPortNumber, SrcBytes, SrcUsername, SrcHostname // Same SrcBytes between SrcIPAddress and DstIpAddress is a potential sign of beaconing activity.
+                | where EventCount > TotalEventsThreshold
+                | extend Name = iif(SrcUsername contains "@", tostring(split(SrcUsername,'@',0)[0]),SrcUsername), UPNSuffix = iif(SrcUsername contains "@",tostring(split(SrcUsername,'@',1)[0]),"")
+                | sort by EventCount desc // Higher the count, more is the possibility of beaconing activity.
+                // Analyze set_TimeGenerated to know if request being sent at specific intervals.
+                | extend IP_0_Address = SrcIpAddr
+                | extend IP_1_Address = DstIpAddr
+                | extend Account_0_Name = Name
+                | extend Account_0_UPNSuffix = UPNSuffix
+                | extend Host_0_HostName = SrcHostname
+  - Format: KQL
+    Skills:
+      - Name: Potential beaconing detected (ASIM Web Session)
+        DisplayName: Potential beaconing detected (ASIM Web Session) (Preview)
+        Description: Identifies beaconing patterns from web traffic logs based on recurrent timedelta patterns.
+        Settings:
+          Target: Sentinel
+          # The ID of the AAD Organization that the Sentinel workspace is in.
+          TenantId: '{{TenantId}}'
+          # The id of the Azure Subscription that the Sentinel workspace is in.
+          SubscriptionId: '{{SubscriptionId}}'
+          # The name of the Resource Group that the Sentinel workspace is in.
+          ResourceGroupName: '{{ResourceGroupName}}'
+          # The name of the Sentinel workspace.
+          WorkspaceName: '{{WorkspaceName}}'
+          # This query detects potential network beaconing activity
+          Template: |-
+                let starttime = 2d;
+                let endtime = 1d;
+                let TimeDeltaThreshold = 25; // Minimum time difference in seconds between two events of same SourceIP and DestinationIP
+                let TotalEventsThreshold = 30; // Total number of events in an hour
+                let MostFrequentTimeDeltaThreshold = 25; // Most frequent time difference in seconds between two events of same SourceIP
+                let PercentBeaconThreshold = 80; // what percent of times the requests were sent at same interval within an hour
+                _Im_WebSession(starttime=startofday(ago(starttime)), endtime=startofday(ago(endtime)))
+                | where isnotempty(SrcIpAddr) and isnotempty(DstIpAddr) and isnotempty(SrcBytes)
+                | where ipv4_is_private(DstIpAddr)== false // Focus only on traffic going to internet
+                | project TimeGenerated, SrcIpAddr, DstIpAddr, SrcBytes, DstBytes, SrcUsername
+                | sort by SrcIpAddr asc,TimeGenerated asc, DstIpAddr asc
+                | serialize
+                | extend NextTimeGenerated = next(TimeGenerated,1), NextSrcIpAddr = next(SrcIpAddr,1)
+                | extend TimeDeltaInSeconds = datetime_diff('second', NextTimeGenerated, TimeGenerated)
+                | where SrcIpAddr == NextSrcIpAddr
+                | where TimeDeltaInSeconds > TimeDeltaThreshold
+                | summarize EventCount=count(), sum(DstBytes), sum(SrcBytes) by TimeDeltaInSeconds, bin(TimeGenerated,1h), SrcUsername, SrcIpAddr, DstIpAddr
+                | summarize (MostFrequentTimeDeltaCount, MostFrequentTimeDeltainSeconds) = arg_max(EventCount, TimeDeltaInSeconds), TotalEvents=sum(EventCount), TotalSentBytes = sum(sum_SrcBytes), TotalReceivedBytes = sum(sum_DstBytes) by bin(TimeGenerated,1h), SrcUsername, SrcIpAddr, DstIpAddr
+                | where TotalEvents > TotalEventsThreshold and MostFrequentTimeDeltaCount > MostFrequentTimeDeltaThreshold
+                | extend BeaconPercent = MostFrequentTimeDeltaCount/toreal(TotalEvents) * 100
+                | where BeaconPercent > PercentBeaconThreshold
+                | extend Name = iif(SrcUsername contains "@", tostring(split(SrcUsername,'@',0)[0]),SrcUsername), UPNSuffix = iif(SrcUsername contains "@",tostring(split(SrcUsername,'@',1)[0]),"")
+                | extend IP_0_Address = SrcIpAddr
+                | extend IP_1_Address = DstIpAddr
+                | extend Account_0_Name = Name
+                | extend Account_0_UPNSuffix = UPNSuffix
+  - Format: KQL
+    Skills:
+      - Name: Request from bots and crawlers (ASIM Web Session)
+        DisplayName: Request from bots and crawlers (ASIM Web Session) (Preview)
+        Description: While most of these values are associated with legitimate bots or crawlers, malicious actors may sometimes spoof or manipulate user agent headers to disguise their activities. It is important to investigate their activities.
+        Settings:
+          Target: Sentinel
+          # The ID of the AAD Organization that the Sentinel workspace is in.
+          TenantId: '{{TenantId}}'
+          # The id of the Azure Subscription that the Sentinel workspace is in.
+          SubscriptionId: '{{SubscriptionId}}'
+          # The name of the Resource Group that the Sentinel workspace is in.
+          ResourceGroupName: '{{ResourceGroupName}}'
+          # The name of the Sentinel workspace.
+          WorkspaceName: '{{WorkspaceName}}'
+          # This query detects potential network beaconing activity
+          Template: |-
+                  let lookback = 1d;
+                  // You can add or remove items from this list as per your requirement.
+                  let BotandCrawlersList = dynamic (['bot','crawler','baiduspider','80legs','ia_archiver','voyager','wget','yahoo','slurp','mediapartners-google','facebookexternalhit','facebookcatalog','okhttp','cURL','Bytespider']);
+                    _Im_WebSession (starttime=ago(lookback))
+                    | where HttpUserAgent has_any (BotandCrawlersList)
+                    | summarize EventCount = count(), EventStartTime=min(TimeGenerated), EventEndTime=max(TimeGenerated), UserAgentList = make_set(HttpUserAgent,100), URLs = make_set(Url,100) by SrcIpAddr, SrcUsername, SrcHostname
+                    | extend Name = iif(SrcUsername contains "@", tostring(split(SrcUsername,'@',0)[0]),SrcUsername), UPNSuffix = iif(SrcUsername contains "@",tostring(split(SrcUsername,'@',1)[0]),"")
+                    | order by EventCount desc
+                    | extend IP_0_Address = SrcIpAddr
+                    | extend Account_0_Name = Name
+                    | extend Account_0_UPNSuffix = UPNSuffix
+                    | extend Host_0_HostName = SrcHostname
+  - Format: KQL
+    Skills:
+      - Name: Detect threat information in web requests (ASIM Web Session)
+        DisplayName: Detect threat information in web requests (ASIM Web Session) (Preview)
+        Description:  This query identifies the presence of threat information in fields such as EventSeverity, ThreatName, and ThreatCategory
+        Settings:
+          Target: Sentinel
+          # The ID of the AAD Organization that the Sentinel workspace is in.
+          TenantId: '{{TenantId}}'
+          # The id of the Azure Subscription that the Sentinel workspace is in.
+          SubscriptionId: '{{SubscriptionId}}'
+          # The name of the Resource Group that the Sentinel workspace is in.
+          ResourceGroupName: '{{ResourceGroupName}}'
+          # The name of the Sentinel workspace.
+          WorkspaceName: '{{WorkspaceName}}'
+          # This query detects potential network beaconing activity
+          Template: |-
+                let lookback= 1d;
+                let exludeString = dynamic (["/", "None"]);
+                _Im_WebSession(starttime=ago(lookback))
+                | project EventSeverity, ThreatName, ThreatCategory, ThreatRiskLevel, ThreatOriginalConfidence, ThreatField, TimeGenerated, SrcIpAddr, SrcUsername, SrcHostname, Url
+                | where (ThreatName !in~ (exludeString) and isnotempty(ThreatName)) or (ThreatCategory !in~ (exludeString) and isnotempty(ThreatCategory)) or ThreatRiskLevel > 60 or toint(ThreatOriginalConfidence) > 0 or EventSeverity in ('Medium','High') or isnotempty(ThreatField)
+                | summarize EventCount = count(), EventStartTime=min(TimeGenerated), EvenEndTime=max(TimeGenerated) by SrcIpAddr, SrcUsername, SrcHostname, Url, ThreatName, ThreatCategory, ThreatRiskLevel, ThreatOriginalConfidence, ThreatField
+                | extend Name = iif(SrcUsername contains "@", tostring(split(SrcUsername,'@',0)[0]),SrcUsername), UPNSuffix = iif(SrcUsername contains "@",tostring(split(SrcUsername,'@',1)[0]),"")
+                | order by EventCount desc
+                | extend IP_0_Address = SrcIpAddr
+                | extend Account_0_Name = Name
+                | extend Account_0_UPNSuffix = UPNSuffix
+                | extend Host_0_HostName = SrcHostname
+                | extend URL_0_Url = Url

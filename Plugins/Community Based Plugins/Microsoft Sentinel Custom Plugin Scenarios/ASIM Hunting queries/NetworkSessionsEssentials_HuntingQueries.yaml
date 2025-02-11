@@ -1,0 +1,339 @@
+Descriptor:
+  Name: Network Session Essentials - ASIM 
+  DisplayName: Network Session Essentials - Hunting Queries (Preview)
+  Description: Network Session normalization schema represents an IP network activity, such as network connections and network sessions. Such events are reported, for example, by operating systems, routers, firewalls, and intrusion prevention systems. 
+  Settings:
+    - Name: TenantId
+      Required: true
+    - Name: WorkspaceName
+      Required: true
+    - Name: SubscriptionId
+      Required: true
+    - Name: ResourceGroupName
+      Required: true
+  SupportedAuthTypes:
+    - None
+
+SkillGroups:
+  - Format: KQL
+    Skills:
+      - Name: Detect Outbound LDAP Traffic (ASIM Network Session schema)
+        DisplayName: Detect Outbound LDAP Traffic (ASIM Network Session schema) (Preview)
+        Description: Malicious actors often abuse misconfigured LDAP servers or applications that use the LDAP servers in organizations. Outbound LDAP traffic should not be allowed outbound through your perimeter firewall.
+        Settings:
+          Target: Sentinel
+          # The ID of the AAD Organization that the Sentinel workspace is in.
+          TenantId: '{{TenantId}}'
+          # The id of the Azure Subscription that the Sentinel workspace is in.
+          SubscriptionId: '{{SubscriptionId}}'
+          # The name of the Resource Group that the Sentinel workspace is in.
+          ResourceGroupName: '{{ResourceGroupName}}'
+          # The name of the Sentinel workspace.
+          WorkspaceName: '{{WorkspaceName}}'
+          # This query detects potential network beaconing activity
+          Template: |-
+              _Im_NetworkSession(starttime=ago(1d))
+              | where EventResult=="Failure" and ipv4_is_private(SrcIpAddr) and not(ipv4_is_private(DstIpAddr)) and SrcIpAddr != DstIpAddr
+              | where tostring(DstPortNumber) has_any ("389", "636")
+              | summarize Starttime= min(TimeGenerated),EndTime= max(TimeGenerated),Eventscount=sum(EventCount), EventVendors=make_set(EventVendor,10) by SrcIpAddr,DstIpAddr,DstPortNumber,NetworkProtocol,EventResult
+              | extend IP_0_Address = SrcIpAddr
+  - Format: KQL
+    Skills:
+      - Name: Detect port misuse by anomaly (ASIM Network Session schema)
+        DisplayName: Detect port misuse by anomaly (ASIM Network Session schema) (Preview)
+        Description: This hunting query detect anomalous pattern in port usage with ASIM normalization.
+        Settings:
+          Target: Sentinel
+          # The ID of the AAD Organization that the Sentinel workspace is in.
+          TenantId: '{{TenantId}}'
+          # The id of the Azure Subscription that the Sentinel workspace is in.
+          SubscriptionId: '{{SubscriptionId}}'
+          # The name of the Resource Group that the Sentinel workspace is in.
+          ResourceGroupName: '{{ResourceGroupName}}'
+          # The name of the Sentinel workspace.
+          WorkspaceName: '{{WorkspaceName}}'
+          # This query detects potential network beaconing activity
+          Template: |-
+              let lookback = 14d;
+              let mapping = _GetWatchlist('NetworkSession_Monitor_Configuration')
+              | where Type == "Hunting" and ThresholdType == "Anomaly" and Severity != "Disabled"  
+              | extend Ports = split(Ports,","),
+                      App = split(App,","),
+                      Protocol = split(Protocol,","),
+                      Direction = split(Direction,","),
+                      Action = split(Action,",")
+              | project Ports, App, Protocol, Direction, Action, Type, ThresholdType, Threshold, Severity, Tactic, Name, Description
+              | mv-expand Ports
+              | mv-expand App
+              | mv-expand Protocol
+              | mv-expand Direction
+              | mv-expand Action
+              | extend Ports = tostring(Ports), App = tostring(App), Protocol = tostring(Protocol), Direction = tostring(Direction), Action = tostring(Action), Threshold = toint(Threshold)
+              ;
+              let AnomalyThreshold = 2.5;
+              let eps = materialize (_Im_NetworkSession | project TimeGenerated | where TimeGenerated > ago(5m) | count | extend Count = Count/300);
+              let maxSummarizedTime = toscalar (
+                  union isfuzzy=true 
+                      (
+                          NetworkCustomAnalytics_protocol_CL
+                              | where EventTime_t > ago(lookback)
+                              | summarize max_TimeGenerated=max(EventTime_t)
+                              | extend max_TimeGenerated = datetime_add('minute',10,max_TimeGenerated)
+                      ),
+                      (
+                          print(ago(lookback))
+                          | project max_TimeGenerated = print_0
+                      )
+                    | summarize maxTimeGenerated = max(max_TimeGenerated) 
+                  );
+              let nosummary = materialize(
+                            union isfuzzy=true 
+                              (
+                                  NetworkCustomAnalytics_protocol_CL
+                                  | where EventTime_t > ago(1d) 
+                                  | project v = int(2)
+                              ),
+                              (
+                                  print int(1) 
+                                  | project v = print_0
+                              )
+                              | summarize maxv = max(v)
+                              | extend nosum = (maxv > 1)
+                            );
+              let allData = union isfuzzy=true 
+                  (
+                      (datatable(exists:int, nosum:bool)[1,false] | where toscalar(eps) > 1000 | join (nosummary) on nosum) | join (
+                      _Im_NetworkSession(starttime=todatetime(ago(2d)), endtime=now())
+                      | where TimeGenerated > maxSummarizedTime
+                      | summarize Count=count() by NetworkProtocol, DstPortNumber, DstAppName, NetworkDirection, DvcAction, bin(TimeGenerated,10m)
+                      | extend EventTime = TimeGenerated, Count = toint(Count), DstPortNumber = toint(DstPortNumber), exists=int(1)
+                      ) on exists
+                      | project-away exists, maxv, nosum*
+                  ),
+                  (
+                      (datatable(exists:int, nosum:bool)[1,false] | where toscalar(eps) between (501 .. 1000) | join (nosummary) on nosum) | join (
+                      _Im_NetworkSession(starttime=todatetime(ago(3d)), endtime=now())
+                      | where TimeGenerated > maxSummarizedTime
+                      | summarize Count=count() by NetworkProtocol, DstPortNumber, DstAppName, NetworkDirection, DvcAction, bin(TimeGenerated,10m)
+                      | extend EventTime = TimeGenerated, Count = toint(Count), DstPortNumber = toint(DstPortNumber), exists=int(1)
+                      ) on exists
+                      | project-away exists, maxv, nosum*
+                  ),
+                  (
+                      (datatable(exists:int, nosum:bool)[1,false] | where toscalar(eps) <= 500 | join (nosummary) on nosum) | join (
+                      _Im_NetworkSession(starttime=todatetime(ago(4d)), endtime=now())
+                      | where TimeGenerated > maxSummarizedTime
+                      | summarize Count=count() by NetworkProtocol, DstPortNumber, DstAppName, NetworkDirection, DvcAction, bin(TimeGenerated,10m)
+                      | extend EventTime = TimeGenerated, Count = toint(Count), DstPortNumber = toint(DstPortNumber), exists=int(1)
+                      ) on exists
+                      | project-away exists, maxv, nosum*
+                  ),
+                  (
+                      NetworkCustomAnalytics_protocol_CL
+                      | where EventTime_t > ago(lookback)
+                      | project-rename NetworkProtocol=NetworkProtocol_s, DstPortNumber=DstPortNumber_d, DstAppName=DstAppName_s, NetworkDirection=NetworkDirection_s, DvcAction=DvcAction_s, Count=count__d, EventTime=EventTime_t
+                      | extend Count = toint(Count),DstPortNumber = toint(DstPortNumber) 
+                  )
+              ;
+              allData
+              | where isnotempty(DstPortNumber)
+              | make-series Total=count() on EventTime from ago(lookback) to now() step 1d by DstPortNumber, NetworkProtocol, NetworkDirection, DvcAction
+              | extend (anomalies, score, baseline) = series_decompose_anomalies(Total, AnomalyThreshold, -1, 'linefit')
+              | mv-expand anomalies, score, baseline, EventTime, Total
+              | extend anomalies = toint(anomalies), score = toint(score), baseline = toint(baseline), EventTime = todatetime(EventTime), Total = tolong(Total)
+              | where EventTime >= ago(1d)
+              | extend DstPortNumber = trim_end(".0",tostring(DstPortNumber))
+              | where score > 2*AnomalyThreshold
+              | join kind=inner ['mapping'] where Ports == DstPortNumber
+              | where (Protocol == "*" or Protocol has NetworkProtocol)
+                              and (Direction == "*" or Direction has NetworkDirection)
+                              and (Action == "*" or Action has DvcAction)  
+              | project Name, Description, NetworkProtocol, DstPortNumber, NetworkDirection, DvcAction, Severity, Tactic
+              | summarize NetworkProtocols=make_set_if(NetworkProtocol,isnotempty(NetworkProtocol),20), 
+                                  NetworkDirections=make_set_if(NetworkDirection,isnotempty(NetworkDirection),5), 
+                                  DvcActions=make_set_if(DvcAction,isnotempty(DvcAction),10) by Name, Severity, Tactic, DstPortNumber, Description
+  - Format: KQL
+    Skills:
+      - Name: Detect port misuse by static threshold (ASIM Network Session schema)
+        DisplayName: Detect port misuse by static threshold (ASIM Network Session schema) (Preview)
+        Description: There is an normal amount of traffic that goes on a particular port in any organization. This hunting query identifies port usage higher than threshold defined in 'NetworkSession_Monitor_Configuration' watchlist to determine high port usage. 
+        Settings:
+          Target: Sentinel
+          # The ID of the AAD Organization that the Sentinel workspace is in.
+          TenantId: '{{TenantId}}'
+          # The id of the Azure Subscription that the Sentinel workspace is in.
+          SubscriptionId: '{{SubscriptionId}}'
+          # The name of the Resource Group that the Sentinel workspace is in.
+          ResourceGroupName: '{{ResourceGroupName}}'
+          # The name of the Sentinel workspace.
+          WorkspaceName: '{{WorkspaceName}}'
+          # This query detects potential network beaconing activity
+          Template: |-
+            let lookback = 10m; 
+            let mapping = _GetWatchlist('NetworkSession_Monitor_Configuration')
+            | where Type == "Hunting" and ThresholdType == "Static" and Severity != "Disabled"  
+            | extend Ports = split(Ports,","),
+                    App = split(App,","),
+                    Protocol = split(Protocol,","),
+                    Direction = split(Direction,","),
+                    Action = split(Action,",")
+            | project Ports, App, Protocol, Direction, Action, Type, ThresholdType, Threshold, Severity, Tactic, Name, Description
+            | mv-expand Ports
+            | mv-expand App
+            | mv-expand Protocol
+            | mv-expand Direction
+            | mv-expand Action
+            | extend Ports = tostring(Ports), App = tostring(App), Protocol = tostring(Protocol), Direction = tostring(Direction), Action = tostring(Action), Threshold = toint(Threshold)
+            ;
+            let nosummary = materialize(
+                          union isfuzzy=true 
+                            (
+                                NetworkCustomAnalytics_protocol_CL 
+                                | project v = int(2)
+                            ),
+                            (
+                                print int(1) 
+                                | project v = print_0
+                            )
+                            | summarize maxv = max(v)
+                            | extend nosum = (maxv > 1)
+                          );
+            let allData = union isfuzzy=true 
+                (
+                    (datatable(exists:int, nosum:bool)[1,false] | join (nosummary) on nosum) | join (
+                    _Im_NetworkSession(starttime=bin(now(-10m),10m), endtime=bin(now(),10m))
+                    | where TimeGenerated > bin(now(-10m),10m)
+                    | summarize Count=count() by NetworkProtocol, DstPortNumber, DstAppName, NetworkDirection, DvcAction, bin(TimeGenerated,10m)
+                    | extend EventTime = TimeGenerated, Count = toint(Count), DstPortNumber = toint(DstPortNumber), exists=int(1)
+                    ) on exists
+                    | project-away exists, maxv, nosum*
+                ),
+                (
+                    NetworkCustomAnalytics_protocol_CL
+                    | where EventTime_t == toscalar(NetworkCustomAnalytics_protocol_CL | summarize max(EventTime_t))
+                    | project-rename NetworkProtocol=NetworkProtocol_s, DstPortNumber=DstPortNumber_d, DstAppName=DstAppName_s, NetworkDirection=NetworkDirection_s, DvcAction=DvcAction_s, Count=count__d, EventTime=EventTime_t
+                    | extend Count = toint(Count),DstPortNumber = toint(DstPortNumber)
+                )
+            ;
+            allData
+                  | where isnotempty(DstPortNumber)
+                  | summarize Sum=sum(Count) by DstPortNumber, NetworkProtocol, NetworkDirection, DvcAction 
+                  | join kind=inner ['mapping'] where Ports has tostring(DstPortNumber)
+                  | where Sum > Threshold         
+                            and (Protocol == "*" or Protocol has NetworkProtocol)
+                            and (Direction == "*" or Direction has NetworkDirection)
+                            and (Action == "*" or Action has DvcAction)
+                  | project Name, Description, NetworkProtocol, DstPortNumber, NetworkDirection, DvcAction, Severity, Tactic
+                  | summarize NetworkProtocols=make_set_if(NetworkProtocol,isnotempty(NetworkProtocol),20), 
+                              NetworkDirections=make_set_if(NetworkDirection,isnotempty(NetworkDirection),5), 
+                              DvcActions=make_set_if(DvcAction,isnotempty(DvcAction),10) by Name, Severity, Tactic, DstPortNumber, Description
+    Skills:
+      - Name: Detects several users with the same MAC address (ASIM Network Session schema)
+        DisplayName: Detects several users with the same MAC address (ASIM Network Session schema) (Preview)
+        Description: this hunting query will identify if same MAC ID is associated with more than one user which can be a case of MAC spoofing attack
+        Settings:
+          Target: Sentinel
+          # The ID of the AAD Organization that the Sentinel workspace is in.
+          TenantId: '{{TenantId}}'
+          # The id of the Azure Subscription that the Sentinel workspace is in.
+          SubscriptionId: '{{SubscriptionId}}'
+          # The name of the Resource Group that the Sentinel workspace is in.
+          ResourceGroupName: '{{ResourceGroupName}}'
+          # The name of the Sentinel workspace.
+          WorkspaceName: '{{WorkspaceName}}'
+          # This query detects potential network beaconing activity
+          Template: |-
+              let lookback = 1h;
+              _Im_NetworkSession(starttime=ago(lookback),endtime=now())
+                | where isnotempty(DstMacAddr) and isnotempty(DstUsername)
+                | summarize UserSet = make_set(DstUsername,10) by DstMacAddr
+                | extend UniqueUsers = array_length(UserSet)
+                | where UniqueUsers >= 2
+  - Format: KQL
+    Skills:
+      - Name: Mismatch between Destination App name and Destination Port (ASIM Network Session schema)
+        DisplayName: Mismatch between Destination App name and Destination Port (ASIM Network Session schema) (Preview)
+        Description: Every standard app has a port associated with it. This query will identify if destination port associated with destination app is not standard which can be a case of network spoofing attack.
+        Settings:
+          Target: Sentinel
+          # The ID of the AAD Organization that the Sentinel workspace is in.
+          TenantId: '{{TenantId}}'
+          # The id of the Azure Subscription that the Sentinel workspace is in.
+          SubscriptionId: '{{SubscriptionId}}'
+          # The name of the Resource Group that the Sentinel workspace is in.
+          ResourceGroupName: '{{ResourceGroupName}}'
+          # The name of the Sentinel workspace.
+          WorkspaceName: '{{WorkspaceName}}'
+          # This query detects potential network beaconing activity
+          Template: |-
+              _Im_NetworkSession(starttime=ago(1d),endtime=now())
+              | where DstAppName in ("dns","web-browsing","http","ssl","smtp") and DstPortNumber in (53, 80, 8080, 8000, 443, 8443, 25)
+              | extend DstAppName = tolower(DstAppName)
+              | where 
+                      (DstAppName == "dns" and not(DstPortNumber == 53)) or
+                      (DstAppName in ("web-browsing","http") and not(DstPortNumber in (80, 8080, 8000))) or
+                      (DstAppName == "ssl" and not(DstPortNumber in (443, 8443))) or
+                      (DstAppName == "smtp" and not(DstPortNumber == 25))
+              | summarize Instances = count(), EventStartTime = min(EventStartTime), EventEndTime = max(EventEndTime) by SrcIpAddr, DstIpAddr, DstAppName, DstPortNumber
+              | extend IP_0_Address = SrcIpAddr
+              | extend IP_1_Address = DstIpAddr
+  - Format: KQL
+    Skills:
+      - Name: Protocols passing authentication in cleartext (ASIM Network Session schema)
+        DisplayName: Protocols passing authentication in cleartext (ASIM Network Session schema) (Preview)
+        Description: This hunting query identifies cleartext protocols like telnet, POP3, IMAP, and non-anonymous FTP that could leak sensitive information. These protocols may use SSL, but usually on different ports. 
+        Settings:
+          Target: Sentinel
+          # The ID of the AAD Organization that the Sentinel workspace is in.
+          TenantId: '{{TenantId}}'
+          # The id of the Azure Subscription that the Sentinel workspace is in.
+          SubscriptionId: '{{SubscriptionId}}'
+          # The name of the Resource Group that the Sentinel workspace is in.
+          ResourceGroupName: '{{ResourceGroupName}}'
+          # The name of the Sentinel workspace.
+          WorkspaceName: '{{WorkspaceName}}'
+          # This query detects potential network beaconing activity
+          Template: |-
+            // Filter events from last 1 day and not failed
+            _Im_NetworkSession(starttime=ago(1d))
+            // Filter for private source IP and public destination IP
+            | where EventResult != "Failure" and ipv4_is_private(SrcIpAddr) and not(ipv4_is_private(DstIpAddr))
+            // Filter for specific destination ports or non-anonymous FTP
+            | where tostring(DstPortNumber) has_any ("23", "143", "110") or (tostring(DstPortNumber) == "21" and SrcUsername != "anonymous")
+            // Summarize data by session parameters
+            | summarize Starttime= min(TimeGenerated),EndTime= max(TimeGenerated),Eventscount=sum(EventCount), EventVendors=make_set(EventVendor,10) by SrcIpAddr,DstIpAddr,DstPortNumber,NetworkProtocol,EventResult
+            | extend PortUsage = case(
+                DstPortNumber == 23, "Telnet",
+                DstPortNumber == 143, "IMAP",
+                DstPortNumber == 110, "POP3",
+                DstPortNumber == 21, "FTP",
+                "Other"
+            )
+            | extend IP_0_Address = SrcIpAddr
+  - Format: KQL
+    Skills:
+      - Name: Remote Desktop Network Traffic(ASIM Network Session schema)
+        DisplayName: Remote Desktop Network Traffic(ASIM Network Session schema) (Preview)
+        Description: This hunting query looks for unusual remote desktop activity by monitoring TCP/3389 traffic. While RDP is common, focus on atypical connections to identify potential threats. 
+        Settings:
+          Target: Sentinel
+          # The ID of the AAD Organization that the Sentinel workspace is in.
+          TenantId: '{{TenantId}}'
+          # The id of the Azure Subscription that the Sentinel workspace is in.
+          SubscriptionId: '{{SubscriptionId}}'
+          # The name of the Resource Group that the Sentinel workspace is in.
+          ResourceGroupName: '{{ResourceGroupName}}'
+          # The name of the Sentinel workspace.
+          WorkspaceName: '{{WorkspaceName}}'
+          # This query detects potential network beaconing activity
+          Template: |-
+              // Filter events from the last day that were not failures
+              _Im_NetworkSession(starttime=ago(1d))
+              // Filter events where the source IP is private, the destination IP is not private, and the source and destination IPs are not the same
+              | where  EventResult == "Failure" and ipv4_is_private(SrcIpAddr) and not(ipv4_is_private(DstIpAddr)) and SrcIpAddr != DstIpAddr
+              // Filter events where the destination port number is 3389 (commonly used for Microsoft Remote Desktop (RDP))
+              | where tostring(DstPortNumber) has_any ("3389")
+              // Summarize the data by source IP, destination IP, destination port number, network protocol, and event result
+              // For each group, calculate the start time, end time, event count, and a set of up to 10 event vendors
+              | summarize Starttime= min(TimeGenerated),EndTime= max(TimeGenerated),Eventscount=sum(EventCount), EventVendors=make_set(EventVendor,10) by SrcIpAddr,DstIpAddr,DstPortNumber,NetworkProtocol,EventResult
+              | extend IP_0_Address = SrcIpAddr
