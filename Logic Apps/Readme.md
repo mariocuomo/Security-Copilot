@@ -1,32 +1,97 @@
-![Security Copilot Overview](https://github.com/Azure/Copilot-For-Security/blob/main/Images/ic_fluent_copilot_64_64%402x.png)
-# Microsoft Security Copilot Logic Apps
-Documentation : https://learn.microsoft.com/en-us/copilot/security/connector-logicapp
+# Phishing Analysis with Security Copilot
+**Author:** Craig Freyman
 
-The Microsoft Security Copilot Logic Apps connector allows you to call into Microsoft Security Copilot from a Logic Apps workflow. This document provides an introduction to the new connector actions you can leverage as well as sample use cases you can deploy to automate investigations such as on Sentinel incidents, email phishing, and others.
+An automated solution for phishing email analysis using Azure Logic Apps, Function Apps, and Security Copilot. The system monitors a shared Office 365 mailbox, analyzes submitted emails for security threats, and generates detailed reports. Optional integration with Microsoft Sentinel for incident tracking and management.
 
-The first iteration of the Logic Apps connector exposes two actions:
+## Prerequisites
 
-- Evaluate Prompt - Given a natural language prompt, this action will invoke a new evaluation within Microsoft Security Copilot and return the output to your logic app workflow. The user can provide an optional sessionId, which will include relevant session context for the evaluation performed. If the sessionId is omitted, the action will create a new session.
+1. **Azure Resources:**
+   - Azure subscription
+   - Contributor rights to the deployment target resource group
+   - [Security Copilot Security Compute Units](https://learn.microsoft.com/en-us/copilot/security/get-started-security-copilot)
+   - Microsoft Sentinel workspace (optional)
 
-- Evaluate Direct Skill - Given a natural language prompt, a skill name, and the skill required inputs, invoke a new evaluation and return its output. Use this action when you know the exact Microsoft Security Copilot skill that is required for the task. This action also allows the option to provide a sessionId.
+2. **Email Configuration:**
+   - [Office 365 shared mailbox for monitoring](https://learn.microsoft.com/en-us/microsoft-365/admin/email/create-a-shared-mailbox?view=o365-worldwide)
+   - Permissions to manage email configurations
 
-Both the "Evaluate Prompt" and "Evaluate Direct Skill" actions allow the user to set an optional sessionId to execute the evaluation within the context of an existing session. If omitted, a new session will be created for the investigation.
+## Deployment Steps
 
-# What you will achieve here :
-Here you will find an array of differnt playbooks aligned with CyberSec scenarios that aim to acheive the following :
-- Enhanced threat detection: Automation can swiftly analyze vast amounts of security data to detect threats that might otherwise go unnoticed.
-- Proactive response: Automated playbooks enable instant responses to security incidents, reducing the window of opportunity for attackers.
-- Continuous monitoring: Automation allows for real-time monitoring of security events, enabling rapid identification and mitigation of potential risks.
-- Reduced human error: By automating repetitive tasks, the risk of human error in cybersecurity operations is significantly minimized.
-- Improved incident response: Automated playbooks facilitate coordinated and consistent responses to security incidents, ensuring efficient resolution.
-- Scalability: Automation enables cybersecurity operations to scale efficiently, keeping pace with growing volumes of threats and data.
-- Compliance automation: Automated processes help ensure adherence to cybersecurity regulations and standards, reducing compliance risks.
-- Resource optimization: By automating routine tasks, cybersecurity professionals can focus on strategic initiatives and proactive threat hunting.
+### 1. Deploy Function App
 
-**Disclaimer**: Please be aware that the logic apps provided are examples intended for use with Security Copilot. Users are encouraged to customize these samples to meet their specific requirements. These should serve as guidelines and inspiration for creating tailored logic apps for ones own use
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fcd1zz%2Fsecuritycopilot%2Frefs%2Fheads%2Fmain%2FLogicApps%2FPhishingLogicApp%2FPhishingLA_Latest_Release%2Ffunctionapp_azuredeploy.json)
 
-**Technical Disclaimer: Logic Apps, SCU Usage, and Best Practices**
+Required Parameters:
+- FunctionAppName (name is prepended with "phish" and random characters are appended)
+- FunctionAppResourceGroup
 
-**Attention Customers!**
+Wait for the Function App to fully deploy before moving on to step 2.
 
-When utilizing Logic Apps on Copilot, please be aware that it may result in increased consumption of Secure Compute Units (SCUs). We recommend closely monitoring SCU usage to optimize resource management. 
+### 2. Deploy Logic App
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fcd1zz%2Fsecuritycopilot%2Frefs%2Fheads%2Fmain%2FLogicApps%2FPhishingLogicApp%2FPhishingLA_Latest_Release%2Flogicapp_azuredeploy.json)
+
+Required Parameters:
+- SubscriptionId
+- LogicAppName
+- FunctionAppName (step 1)
+- FunctionAppResourceGroup (step 1)
+- SharedMailboxAddress
+- HTMLReportRecipient
+
+Optional Sentinel Parameters (use "none" if not using Sentinel):
+- LogAnalyticsWorkspaceName
+- LogAnalyticsWorkspaceId
+- LogAnalyticsResourceGroup
+
+### 3. Configure API Connections
+
+1. Open the Logic App in Azure Portal
+2. Authorize these connections:
+   - Office 365 (shared mailbox access)
+   - Security Copilot
+   - Azure Monitor Logs (if using Sentinel)
+   - Sentinel (if using Sentinel)
+
+### 4. Configure Logic App Permissions
+
+If using Sentinel integration, assign these roles to the Logic App's managed identity:
+
+1. "Log Analytics Reader" role (provides Microsoft.OperationalInsights/workspaces/read)
+2. "Microsoft Sentinel Responder" role (provides Microsoft.SecurityInsights/incidents/comments/write)
+
+Assign Permissions Step by Step
+
+1. Open the Log Analytics workspace and go to "Access control (IAM)"
+
+![alt text](image.png)
+
+2. Select "Log Analytics Reader"
+
+![alt text](image-1.png)
+
+3. Select "Managed Identity" and select the name of your Logic App
+
+![alt text](image-2.png)
+
+4. Click next and assign permissions.
+5. Repeat steps 1-4 for the "Microsoft Sentinel Responder" role.
+
+### 5. Enable the Logic App
+
+The Logic App deploys in a disabled state. Enable it in the Logic App Overview to begin operation.
+
+## Features
+
+- Automated email monitoring and analysis
+- Detailed security assessment using Security Copilot
+- Classification of emails (Phishing, Spam, Legitimate, Suspicious)
+- HTML report generation
+- Optional Sentinel incident integration
+
+## Security Notes
+
+- The solution uses system-managed identities for secure access
+- Review and configure storage account security settings per your company policy
+- Ensure minimum required permissions for all connections
+- Regularly update Function App dependencies
