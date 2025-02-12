@@ -83,9 +83,9 @@ The Logic App deploys in a disabled state. Enable it in the Logic App Overview t
 
 ## Features
 
-- Automated email monitoring and analysis
-- Detailed security assessment using Security Copilot
+- Automated user submitted phishing analysis
 - Classification of emails (Phishing, Spam, Legitimate, Suspicious)
+- Can process PDF & Excel file attachments
 - HTML report generation
 - Optional Sentinel incident integration
 
