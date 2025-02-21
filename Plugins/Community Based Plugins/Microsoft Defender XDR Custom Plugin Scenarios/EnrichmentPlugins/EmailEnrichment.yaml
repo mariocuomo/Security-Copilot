@@ -157,4 +157,4 @@ SkillGroups:
             | project-rename RequestedBy=RecipientEmailAddress
             | project-rename DeniedBy=AccountDisplayName
             | project EmailTime, SenderFromAddress, SenderDisplayName, Subject, RequestedBy, RecipientEmailAddress1, DeniedBy, DeniedTime, RequestTime,NetworkMessageId,NetworkMessageId1
-            | sort by DeniedTim
+            | sort by DeniedTime
