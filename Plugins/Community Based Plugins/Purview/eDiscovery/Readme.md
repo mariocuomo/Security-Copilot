@@ -45,9 +45,9 @@ This custom Security Copilot plugin enhances your organization's eDiscovery capa
 4. **Create Secrets in Entra ID**
 
    Follow these steps to create and manage secrets for your application: 
-   [How to Add Credentials in Entra ID](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#add-credentials)
+   **[`How to Add Credentials in Entra ID`](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#add-credentials)**
 
-5. **Navigate to Custom Plugins**
+6. **Navigate to Custom Plugins**
 
    Go to the **Manage Sources** on the home page of **Security Copilot**, and scroll down to the **Custom Plugins** section.
 
