@@ -52,6 +52,8 @@ This custom Security Copilot plugin enhances your organization's eDiscovery capa
    Go to the **Manage Sources** on the home page of **Security Copilot**, and scroll down to the **Custom Plugins** section.
 
    ![alt text](scp-upload-custom-plugins.png)
+
+   ![alt text](CfS-add-plugin.png)
      
 
 
