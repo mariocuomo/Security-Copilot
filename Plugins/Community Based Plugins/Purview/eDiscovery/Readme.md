@@ -48,6 +48,7 @@ This custom Security Copilot plugin enhances your organization's eDiscovery capa
    [How to Add Credentials in Entra ID](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#add-credentials)
 
 5. **Navigate to Custom Plugins**
+
    Go to the **Manage Sources** page in **Security Copilot**, and scroll down to the **Custom Plugins** section. 
      
 
