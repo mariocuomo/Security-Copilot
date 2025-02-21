@@ -23,6 +23,13 @@ This custom Security Copilot plugin enhances your organization's eDiscovery capa
   To register your application and configure these permissions, follow the steps here:  
   [Register an Application in Entra ID](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#register-an-application)
 
+## Setting Up the Custom Plugin in Security Copilot
+
+### Uploading the Custom Plugin  
+
+1. **Download the Required File**  
+   Obtain the file **[`eDiscovery_OAuth_API_manifest.yaml`](https://github.com/samitks77/Copilot-For- Security/blob/main/Plugins/Community%20Based%20Plugins/Purview/eDiscovery/eDiscovery_OAuth_API_manifest.yaml)** from the designated directory. This YAML file will be uploaded to **Security Copilot** during the setup process.
+
 
 ### Instructions
 #### Upload the Custom Plugin
