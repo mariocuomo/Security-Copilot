@@ -35,6 +35,13 @@ This custom Security Copilot plugin enhances your organization's eDiscovery capa
    upload.    
    ![alt text](EntraID-ClientID-TenantID.png)  
    <br>
+3. **Generate and Copy Your Secret Value**
+   - During the plugin upload process in **Security Copilot**, you will need a **Secret Value** from **Certificates & Secrets** in your Entra ID App.  
+   - This **Secret Value** acts as your **API key** for the plugin to function correctly.  
+   - **Important:** Copy your **Secret Value** immediately after creating it. If you navigate away from the page, the value will no longer be readable.
+     ![alt text](EntraID-SecretValue.png)
+     <br>
+     
 
 
 ### Instructions
