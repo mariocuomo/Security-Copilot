@@ -55,7 +55,10 @@ This custom Security Copilot plugin enhances your organization's eDiscovery capa
 
    ![alt text](CfS-add-plugin.png)
 7. **Upload the Plugin File**
+
    Click on **Security Copilot Plugin**, then upload the **`eDiscovery_OAuth_API_manifest.yaml`** file.
+
+   ![alt text](CfS-add-plugin-part2.png)
      
 
 
