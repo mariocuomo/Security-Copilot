@@ -31,7 +31,7 @@ This custom Security Copilot plugin enhances your organization's eDiscovery capa
    - Obtain the file **[`eDiscovery_OAuth_API_manifest.yaml`](https://github.com/samitks77/Copilot-For-Security/blob/main/Plugins/Community%20Based%20Plugins/Purview/eDiscovery/eDiscovery_OAuth_API_manifest.yaml)** from the designated directory. This YAML file will be uploaded to **Security Copilot** during the setup process.
    
 2. **Add Client ID & Tenant ID**  
-   From your **Entra ID App Registration**, make sure to add your **Client ID** and **Tenant ID** before proceeding with the 
+   - From your **Entra ID App Registration**, make sure to add your **Client ID** and **Tenant ID** before proceeding with the 
    upload.    
    ![alt text](EntraID-ClientID-TenantID.png)  
    
@@ -44,19 +44,19 @@ This custom Security Copilot plugin enhances your organization's eDiscovery capa
 
 4. **Create Secrets in Entra ID**
 
-   Follow these steps to create and manage secrets for your application: 
+   - Follow these steps to create and manage secrets for your application: 
    **[`How to Add Credentials in Entra ID`](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#add-credentials)**
 
 6. **Navigate to Custom Plugins**
 
-   Go to the **Manage Sources** on the home page of **Security Copilot**, and scroll down to the **Custom Plugins** section.
+   - Go to the **Manage Sources** on the home page of **Security Copilot**, and scroll down to the **Custom Plugins** section.
 
    ![alt text](scp-upload-custom-plugins.png)
 
    ![alt text](scp-upload-custom-plugins-2.png)
 7. **Upload the Plugin File**
 
-   Click on **Security Copilot Plugin**, then upload the **`eDiscovery_OAuth_API_manifest.yaml`** file.
+   - Click on **Security Copilot Plugin**, then upload the **`eDiscovery_OAuth_API_manifest.yaml`** file.
 
    ![alt text](scp-upload-custom-plugins-api-manifest.png)
 
