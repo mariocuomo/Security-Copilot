@@ -28,7 +28,7 @@ This custom Security Copilot plugin enhances your organization's eDiscovery capa
 ### Uploading the Custom Plugin  
 
 1. **Download the Required File**  
-   Obtain the file **[`eDiscovery_OAuth_API_manifest.yaml`](https://github.com/samitks77/Copilot-For-Security/blob/main/Plugins/Community%20Based%20Plugins/Purview/eDiscovery/eDiscovery_OAuth_API_manifest.yaml)** from the designated directory. This YAML file will be uploaded to **Security Copilot** during the setup process.
+   - Obtain the file **[`eDiscovery_OAuth_API_manifest.yaml`](https://github.com/samitks77/Copilot-For-Security/blob/main/Plugins/Community%20Based%20Plugins/Purview/eDiscovery/eDiscovery_OAuth_API_manifest.yaml)** from the designated directory. This YAML file will be uploaded to **Security Copilot** during the setup process.
    
 2. **Add Client ID & Tenant ID**  
    From your **Entra ID App Registration**, make sure to add your **Client ID** and **Tenant ID** before proceeding with the 
