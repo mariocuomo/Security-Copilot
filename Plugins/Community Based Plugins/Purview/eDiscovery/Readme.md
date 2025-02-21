@@ -79,7 +79,7 @@ You have successfully set up the **eDiscovery Plugin** in **Security Copilot**. 
 
 🔹 **These are **suggested prompts** that you can use to interact with this plugin in **Security Copilot**. Each prompt helps you execute specific **eDiscovery actions efficiently**. You can modify these prompts based on your use case and organizational requirements. Below, you'll find structured input fields required for each action, ensuring precise execution of eDiscovery tasks. For a cleaner, structured view of the prompts, check out the HTML version below:**
 
-👉 **[`Suggested Prompts`](https://htmlpreview.github.io/?https://raw.githubusercontent.com/samitks77/Copilot-For-Security/main/Plugins/Community%20Based%20Plugins/Purview/eDiscovery/sampleprompts.html)**
+👉 **[`Suggested Prompts in HTML`](https://htmlpreview.github.io/?https://raw.githubusercontent.com/samitks77/Copilot-For-Security/main/Plugins/Community%20Based%20Plugins/Purview/eDiscovery/sampleprompts.html)**
 
 
 
