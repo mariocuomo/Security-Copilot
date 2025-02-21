@@ -33,7 +33,6 @@ This custom Security Copilot plugin enhances your organization's eDiscovery capa
 2. **Add Client ID & Tenant ID**  
    From your **Entra ID App Registration**, make sure to add your **Client ID** and **Tenant ID** before proceeding with the 
    upload.  
-
    <br>  
    ![alt text](EntraID-ClientID-TenantID.png)  
    <br>
