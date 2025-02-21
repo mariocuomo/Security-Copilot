@@ -81,7 +81,7 @@ These are **sample prompts** that you can use to interact with this plugin in **
 
 🔹 **For a cleaner, structured view of the prompts, check out the HTML version below:**
 
-👉 View the HTML version of the prompts **[`here`](https://htmlpreview.github.io/?https://raw.githubusercontent.com/samitks77/Copilot-For-Security/main/Plugins/Community%20Based%20Plugins/Purview/eDiscovery/sampleprompts.html)**
+👉 **[`eDiscovery Custom Plugin Sample Prompts`](https://htmlpreview.github.io/?https://raw.githubusercontent.com/samitks77/Copilot-For-Security/main/Plugins/Community%20Based%20Plugins/Purview/eDiscovery/sampleprompts.html)**
 
 
 
