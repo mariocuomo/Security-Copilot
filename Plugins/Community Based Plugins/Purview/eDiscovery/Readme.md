@@ -47,27 +47,28 @@ This custom Security Copilot plugin enhances your organization's eDiscovery capa
    - Follow these steps to create and manage secrets for your application: 
    **[`How to Add Credentials in Entra ID`](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#add-credentials)**
 
-6. **Navigate to Custom Plugins**
+5. **Navigate to Custom Plugins**
 
    - Go to the **Manage Sources** on the home page of **Security Copilot**, and scroll down to the **Custom Plugins** section.
 
    ![alt text](scp-upload-custom-plugins.png)
 
    ![alt text](scp-upload-custom-plugins-2.png)
-7. **Upload the Plugin File**
+6. **Upload the Plugin File**
 
    - Click on **Security Copilot Plugin**, then upload the **`eDiscovery_OAuth_API_manifest.yaml`** file.
 
    ![alt text](scp-upload-custom-plugins-api-manifest.png)
 
-8.  **Enter the Client Secret and Connect**
+7.  **Enter the Client Secret and Connect**
    
     - Paste the **Client Secret Value** from your **Entra ID App Registration**.  
     - Click **Connect** to proceed.
 
      ![alt text](CfS-Secret.png)
 
-9.  **Sign-In**
+8.  **Sign-In**
+
     Once you click **Connect**, a new window will open where you will need to sign in with your credentials.
 
 ### Plugin Setup Complete  
