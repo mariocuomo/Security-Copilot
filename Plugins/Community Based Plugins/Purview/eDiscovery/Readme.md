@@ -61,10 +61,11 @@ This custom Security Copilot plugin enhances your organization's eDiscovery capa
    ![alt text](scp-upload-custom-plugins-api-manifest.png)
 
 8.  **Enter the Client Secret and Connect**
+   
    - Paste the **Client Secret Value** from your **Entra ID App Registration**.  
    - Click **Connect** to proceed.
 
-     ![alt text](CfS-add-plugin-part2.png)
+     ![alt text](CfS-Secret.png)
      
      
 
