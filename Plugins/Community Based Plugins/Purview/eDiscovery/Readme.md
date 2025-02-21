@@ -41,6 +41,10 @@ This custom Security Copilot plugin enhances your organization's eDiscovery capa
    - **Important:** Copy your **Secret Value** immediately after creating it. If you navigate away from the page, the value will no longer be readable.
      
      ![alt text](EntraID-SecretValue.png)
+
+4. **Create Secrets in Entra ID**
+   Follow these steps to create and manage secrets for your application:  
+   [How to Add Credentials in Entra ID](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#add-credentials)
      
      
 
