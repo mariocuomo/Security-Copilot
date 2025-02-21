@@ -66,6 +66,14 @@ This custom Security Copilot plugin enhances your organization's eDiscovery capa
     - Click **Connect** to proceed.
 
      ![alt text](CfS-Secret.png)
+
+9.  **Sign-In**
+    Once you click **Connect**, a new window will open where you will need to sign in with your credentials.
+
+### Plugin Setup Complete  
+
+You have successfully set up the **eDiscovery Plugin** in **Security Copilot**. With the plugin uploaded, Client ID, Tenant ID, and Secret Value configured, and authentication completed, your integration is now ready to use. Security Copilot can now leverage this plugin for enhanced **eDiscovery capabilities**, allowing you to streamline investigations and data retrieval processes. If you encounter any issues, verify your Entra ID settings, ensure your Client Secret is valid, and check your Security Copilot permissions.
+
      
      
 
