@@ -28,14 +28,16 @@ Pre-requisites
 
 #### 2. Add Custodian to eDiscovery Case  
    - **Example Prompt(s):**  
-     - Add custodian to the eDiscovery case in Purview, use the case ID from above or use this Case ID `"1xxxx234-XXXX-XXXX-a1cd-fxxxxxxxxxx0"` and add this email for the custodian `"test@test123.com"`  
+     - Add custodian to the eDiscovery case in Purview, use the case ID from above or use this Case ID `"1xxxx234-XXXX-XXXX- 
+       a1cd-fxxxxxxxxxx0"` and add this email for the custodian `"test@test123.com"`  
    - **Inputs:**  
      - [Email]  
      - [Case ID]  
 
 #### 3. Apply Hold on eDiscovery Custodian  
    - **Example Prompt(s):**  
-     - Apply hold on eDiscovery custodians using the custodian ID from above or use this Custodian ID `"2xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx6"`  
+     - Apply hold on eDiscovery custodians using the custodian ID from above or use this Custodian ID 
+       `"2xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx6"`  
    - **Inputs:**  
      - [Custodian ID]  
 
@@ -48,33 +50,54 @@ Pre-requisites
 
 #### 5. Add New eDiscovery Search Object to the Case  
    - **Example Prompt(s):**  
-     - Add a new `ediscoverySearch` object with this Case ID `"1xxxx234-XXXX-XXXX-a1cd-fxxxxxxxxxx0"` with the display name `"Test-123-search"`, also add `dataSourceScopes` to **allTenantMailboxes, allTenantSites, allCaseCustodians**.  
+     - Add a new `ediscoverySearch` object with this Case ID `"1xxxx234-XXXX-XXXX-a1cd-fxxxxxxxxxx0"` with the display name 
+       `"Test-123-search"`, also add `dataSourceScopes` to **allTenantMailboxes, allTenantSites, allCaseCustodians**.  
    - **Inputs:**  
      - [Case ID]  
      - [Display Name]  
 
 #### 6. Run an Estimate on eDiscovery Case  
    - **Example Prompt(s):**  
-     - Run an estimate of the number of emails and documents in eDiscovery with this Search ID `"2xxxxxxx-xxx4-xxxd-4xxx-5xxxxxxxxxxx"` or the Search ID from above.  
+     - Run an estimate of the number of emails and documents in eDiscovery with this Search ID `"2xxxxxxx-xxx4-xxxd-4xxx- 
+       5xxxxxxxxxxx"` or the Search ID from above.  
    - **Inputs:**  
      - [Search ID]  
 
 #### 7. Create New eDiscovery ReviewSet  
    - **Example Prompt(s):**  
-     - Create a new `ediscoveryReviewSet` for the above case ID or use this Case ID `"1xxxx234-XXXX-XXXX-a1cd-fxxxxxxxxxx0"` with the Display Name `"Test-123-reviewset"`.  
+     - Create a new `ediscoveryReviewSet` for the above case ID or use this Case ID `"1xxxx234-XXXX-XXXX-a1cd-fxxxxxxxxxx0"` 
+       with the Display Name `"Test-123-reviewset"`.  
    - **Inputs:**  
      - [Case ID]  
 
 #### 8. Initiate an Export in eDiscovery  
    - **Example Prompt(s):**  
-     - Use this Case ID `"1xxxx234-XXXX-XXXX-a1cd-fxxxxxxxxxx0"` or the Case ID from above & this ReviewSet ID `"dxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"` or the ReviewSet ID from above and initiate an export.  
+     - Use this Case ID `"1xxxx234-XXXX-XXXX-a1cd-fxxxxxxxxxx0"` or the Case ID from above & this ReviewSet ID `"dxxxxxxx- 
+       xxxx-xxxx-xxxx-xxxxxxxxxxxx"` or the ReviewSet ID from above and initiate an export.  
    - **Inputs:**  
      - [Case ID]  
-     - [Review Set ID]  
+     - [Review Set ID]
 
-#### 9. Get a List of Case Operations in eDiscovery  
+#### 9. Initiate an Export in eDiscovery Search 
    - **Example Prompt(s):**  
-     - Use the Case ID from above or use this Case ID `"1xxxx234-XXXX-XXXX-a1cd-fxxxxxxxxxx0"`, get a list of the `caseOperation` objects and their properties.  
+     - Initiate an export from the above Search, Use this Case ID `"1xxxx234-XXXX-XXXX-a1cd-fxxxxxxxxxx0"` or the Case ID from 
+       above & this Search ID `"dxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"` or the Search ID from above and initiate an export. 
+       Additional parameters include, displayName= "Export 1 - simple PST-V2", exportCriteria = "searchHits", additionalOptions 
+       = "none" and exportFormat = "pst"  
+   - **Inputs:**  
+     - [Case ID]  
+     - [Search ID]
+     
+#### 11. Update index on Custodian/s  
+   - **Example Prompt(s):**  
+     - Use the Case ID from above or use this Case ID `"1xxxx234-XXXX-XXXX-a1cd-fxxxxxxxxxx0"`, and update index on Custodian
+   - **Inputs:**  
+     - [Case ID]  
+
+#### 12. Get a List of Case Operations in eDiscovery  
+   - **Example Prompt(s):**  
+     - Use the Case ID from above or use this Case ID `"1xxxx234-XXXX-XXXX-a1cd-fxxxxxxxxxx0"`, get a list of the 
+       `caseOperation` objects and their properties.  
    - **Inputs:**  
      - [Case ID]  
 
