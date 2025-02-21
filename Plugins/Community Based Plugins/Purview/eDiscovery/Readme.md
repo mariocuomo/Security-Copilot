@@ -1,16 +1,16 @@
-# eDiscovery Plugin for Copilot for Security
+# eDiscovery Plugin for Security Copilot
 Author: Amit Singh
 
-This custom Copilot for Security plugin enhances your organization's eDiscovery capabilities in Microsoft Purview. It is designed for workflows where you create a case and export artifacts directly. You can initiate an export from Search after indexing and estimating the artifacts. However, this plugin does not support workflows that involve attaching searches to a review set for further analysis in eDiscovery. Attaching searches to a review set is a manual process that must be completed within the case in the Purview portal.
+This custom Security Copilot plugin enhances your organization's eDiscovery capabilities in Microsoft Purview. It is designed for workflows where you create a case and export artifacts directly. You can initiate an export from Search after indexing and estimating the artifacts. However, this plugin does not support workflows that involve attaching searches to a review set for further analysis in eDiscovery. Attaching searches to a review set is a manual process that must be completed within the case in the Purview portal.
 
-### Prerequisites for Using Copilot for Security
+### Prerequisites for Using Security Copilot
 
-- **Ensure Copilot for Security is Enabled**  
-  Before you start, make sure Copilot for Security is enabled in your environment. Follow the onboarding steps here:  
-  [Get Started with Copilot for Security](https://learn.microsoft.com/en-us/security-copilot/get-started-security-copilot#onboarding-to-microsoft-security-copilot)
+- **Ensure Security Copilot is Enabled**  
+  Before you start, make sure Security Copilot is enabled in your environment. Follow the onboarding steps here:  
+  [Get Started with Security Copilot](https://learn.microsoft.com/en-us/security-copilot/get-started-security-copilot#onboarding-to-microsoft-security-copilot)
 
 - **Check Your Access to Upload Custom Plugins**  
-  To use custom plugins, you need the proper permissions to upload them in Copilot for Security. Learn how to manage and enable this feature here:  
+  To use custom plugins, you need the proper permissions to upload them in Security Copilot. Learn how to manage and enable this feature here:  
   [Managing Custom Plugins](https://learn.microsoft.com/en-us/security-copilot/manage-plugins?tabs=securitycopilotplugin#managing-custom-plugins)
 
 - **Set Up the Required Permissions for Your Application**  
@@ -27,10 +27,10 @@ This custom Copilot for Security plugin enhances your organization's eDiscovery 
 ### Instructions
 #### Upload the Custom Plugin
 
-* Obtain the file [eDiscovery_OAuth_API_manifest.yaml](https://github.com/samitks77/Copilot-For-Security/blob/main/Plugins/Community%20Based%20Plugins/Purview/eDiscovery/eDiscovery_OAuth_API_manifest.yaml) from this directory. This is the yaml that you will upload in Copilot for Security. From your EntraID App registration, add the ClientId & tenant ID.<br><br>![alt text](EntraID-ClientID-TenantID.png)
-* During the upload process as a custom plugin in Copilot for Security you will need to have your Secret Value from Certificates & secrets. This will be your API key for this plugin to work. Copy your secret value once the secret is created because if you navigate away from this screen, your secret value will not be human readable <br><br> ![alt text](EntraID-SecretValue.png) <br><br> Follow these steps to create the secrets (https://learn.microsoft.com/en-us/graph/auth-register-app-v2#add-credentials).
-* Upload eDiscovery_OAuth_API_manifest.yaml to Copilot for Security by navigating to custom plugins at the bottom of the Manage Sources page. ![alt text](CfS-add-plugin.png)
-* Upload the file by clicking on Copilot for Security plugin. ![alt text](CfS-add-plugin-part2.png)
+* Obtain the file [eDiscovery_OAuth_API_manifest.yaml](https://github.com/samitks77/Copilot-For-Security/blob/main/Plugins/Community%20Based%20Plugins/Purview/eDiscovery/eDiscovery_OAuth_API_manifest.yaml) from this directory. This is the yaml that you will upload in Security Copilot. From your EntraID App registration, add the ClientId & tenant ID.<br><br>![alt text](EntraID-ClientID-TenantID.png)
+* During the upload process as a custom plugin in Security Copilot you will need to have your Secret Value from Certificates & secrets. This will be your API key for this plugin to work. Copy your secret value once the secret is created because if you navigate away from this screen, your secret value will not be human readable <br><br> ![alt text](EntraID-SecretValue.png) <br><br> Follow these steps to create the secrets (https://learn.microsoft.com/en-us/graph/auth-register-app-v2#add-credentials).
+* Upload eDiscovery_OAuth_API_manifest.yaml to Security Copilot by navigating to custom plugins at the bottom of the Manage Sources page. ![alt text](CfS-add-plugin.png)
+* Upload the file by clicking on Security Copilot plugin. ![alt text](CfS-add-plugin-part2.png)
 * Paste the Client Secret Value from EntraID App Registration & click connect ![alt text](CfS-Secret.png) It should open another window where you will sign in. 
 
 ### Skills & Prompts
