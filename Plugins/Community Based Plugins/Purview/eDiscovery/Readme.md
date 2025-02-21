@@ -3,11 +3,26 @@ Author: Amit Singh
 
 This custom Copilot for Security plugin enhances your organization's eDiscovery capabilities in Microsoft Purview. It is designed for workflows where you create a case and export artifacts directly. You can initiate an export from Search after indexing and estimating the artifacts. However, this plugin does not support workflows that involve attaching searches to a review set for further analysis in eDiscovery. Attaching searches to a review set is a manual process that must be completed within the case in the Purview portal.
 
-Pre-requisites
+### Prerequisites for Using Copilot for Security
 
-* [Copilot for Security Enabled](https://learn.microsoft.com/en-us/security-copilot/get-started-security-copilot#onboarding-to-microsoft-security-copilot)
-* [Access to upload custom plugins](https://learn.microsoft.com/en-us/security-copilot/manage-plugins?tabs=securitycopilotplugin#managing-custom-plugins)
-* Make sure your application has the following delegated graph (https://graph.microsoft.com) permissions: offline_access user.read eDiscovery.Read.All & eDiscovery.ReadWrite.All. See this link for App registration [EntraID Application Registration created](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#register-an-application) 
+- **Ensure Copilot for Security is Enabled**  
+  Before you start, make sure Copilot for Security is enabled in your environment. Follow the onboarding steps here:  
+  [Get Started with Copilot for Security](https://learn.microsoft.com/en-us/security-copilot/get-started-security-copilot#onboarding-to-microsoft-security-copilot)
+
+- **Check Your Access to Upload Custom Plugins**  
+  To use custom plugins, you need the proper permissions to upload them in Copilot for Security. Learn how to manage and enable this feature here:  
+  [Managing Custom Plugins](https://learn.microsoft.com/en-us/security-copilot/manage-plugins?tabs=securitycopilotplugin#managing-custom-plugins)
+
+- **Set Up the Required Permissions for Your Application**  
+  Your application must have the following permissions for Microsoft Graph (`https://graph.microsoft.com`):  
+  - `offline_access`  
+  - `user.read`  
+  - `eDiscovery.Read.All`  
+  - `eDiscovery.ReadWrite.All`  
+
+  To register your application and configure these permissions, follow the steps here:  
+  [Register an Application in Entra ID](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#register-an-application)
+
 
 ### Instructions
 #### Upload the Custom Plugin
