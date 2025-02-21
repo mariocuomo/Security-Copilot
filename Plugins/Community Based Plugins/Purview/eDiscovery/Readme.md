@@ -29,16 +29,17 @@ This custom Security Copilot plugin enhances your organization's eDiscovery capa
 
 1. **Download the Required File**  
    Obtain the file **[`eDiscovery_OAuth_API_manifest.yaml`](https://github.com/samitks77/Copilot-For-Security/blob/main/Plugins/Community%20Based%20Plugins/Purview/eDiscovery/eDiscovery_OAuth_API_manifest.yaml)** from the designated directory. This YAML file will be uploaded to **Security Copilot** during the setup process.
-
-2. **Add Client ID & Tenant ID**  
+   <br>
+3. **Add Client ID & Tenant ID**  
    From your **Entra ID App Registration**, make sure to add your **Client ID** and **Tenant ID** before proceeding with the 
    upload.    
    ![alt text](EntraID-ClientID-TenantID.png)  
    <br>
-3. **Generate and Copy Your Secret Value**
+4. **Generate and Copy Your Secret Value**
    - During the plugin upload process in **Security Copilot**, you will need a **Secret Value** from **Certificates & Secrets** in your Entra ID App.  
    - This **Secret Value** acts as your **API key** for the plugin to function correctly.  
    - **Important:** Copy your **Secret Value** immediately after creating it. If you navigate away from the page, the value will no longer be readable.
+     <br>
      ![alt text](EntraID-SecretValue.png)
      <br>
      
