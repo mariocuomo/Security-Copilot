@@ -7,8 +7,8 @@ This plugin aids in comprehending the recommended approach of integrating multip
 
 ## TYPE AND REQUIREMENTS
 **TYPE**: KQL (Sentinel) <br>
-**SOURCE**: _DeviceInfo_ and _EmailEvents_ tables <br>
-**REQUIREMENTS**: access to Defender XDR 
+**SOURCE**: _AzureActivity_ <br>
+**REQUIREMENTS**: access to Sentinel
 
 ---
 
