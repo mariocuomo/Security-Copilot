@@ -4,6 +4,35 @@ Descriptor:
   Description: Get the recent audit logs from GCP (Google Cloud Platform) for a certain user, ip address and time range from logs in Microsoft Sentinel
   #Can you describe in detail over a few paragraphs the GCP Audit Log operations associated with user@domain.com over the last 90 days?? Be sure to also include all the logs in a format I can export.
 
+  Settings:
+    - Name: TenantId
+      Label: TenantId
+      Description: Azure tenant ID where Sentinel exists. 
+      HintText: Azure tenant ID where Sentinel exists. 
+      SettingType: String
+      Required: true
+
+    - Name: SubscriptionId
+      Label: SubscriptionId
+      Description: Azure subscription ID where Sentinel exists.
+      HintText: Azure subscription ID where Sentinel exists.
+      SettingType: String
+      Required: true
+      
+    - Name: WorkspaceName
+      Label: WorkspaceName
+      Description: Log Analytics workspace name for Sentinel. 
+      HintText: Log Analytics workspace name for Sentinel. 
+      SettingType: String
+      Required: true
+
+    - Name: ResourceGroupName
+      Label: ResourceGroupName
+      Description: Resource group where Sentinel workspace exists. 
+      HintText: Resource group where Sentinel workspace exists. 
+      SettingType: String
+      Required: true
+
 SkillGroups:
   - Format: KQL
     Skills:
@@ -25,14 +54,10 @@ SkillGroups:
             Required: true
         Settings:
           Target: Sentinel
-           # The ID of the AAD Organization that the Sentinel workspace is in.
-          TenantId: **ENTRA TENANT GUID**
-          # The id of the Azure Subscription that the Sentinel workspace is in.
-          SubscriptionId: **AZURE SUBSCRIPTION ID**
-          # The name of the Resource Group that the Sentinel workspace is in.
-          ResourceGroupName: **LOG ANALYTICS RESOURCE GROUP NAME**
-          # The name of the Sentinel workspace.
-          WorkspaceName: **LOG ANALYTICS WORKSPACE NAME**
+          TenantId: "{{TenantId}}"
+          SubscriptionId: "{{SubscriptionId}}"
+          ResourceGroupName: "{{ResourceGroupName}}"
+          WorkspaceName: "{{WorkspaceName}}"
           Template: |-
             let userPrincipalName='{{userPrincipalName}}';
             let ip='{{ip}}';
