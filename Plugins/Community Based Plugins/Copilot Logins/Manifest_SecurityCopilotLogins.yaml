@@ -8,7 +8,7 @@ SkillGroups:
     Skills:
       - Name: SecurityCopilotLogins
         DisplayName: Security Copilot Portal Logins
-        Description: Fetches Security Copilot Standalone Portal logins in the last 3 days	
+        Description: Fetches Security Copilot Standalone Portal logins in the last 3 days - for each identity, the count of logins performed is returned
         Settings:
           Target: Sentinel
           TenantId: <your_tenant_ID>
