@@ -1,7 +1,7 @@
 # Security Copilot Login Activities
 
 ## DESCRIPTION
-This plugin enables you to track how many logins there have been to the Security Copilot standalone experience and who did it.
+This plugin enables you to track how many logins there have been to the Security Copilot standalone experience and who did it. For each identity, the count of logins performed is returned.
 
 ---
 
