@@ -37,7 +37,7 @@ This plugin enables you to track how many logins there have been to the Security
 
 ## SAMPLE PROMPTS
 
-- `« Fetch the trusted users in Sentinel »`
+- `« Fetches Security Copilot Standalone Portal logins in the last 3 days and detect if there are anomalies in user accesses »`
 ---
 
 ## SCREENSHOTS
