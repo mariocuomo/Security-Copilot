@@ -21,3 +21,4 @@ SkillGroups:
             | where AppDisplayName == "Security Copilot"
             | project TimeGenerated, Identity, UserPrincipalName, OperationName
             | summarize count() by Identity
+            | order by count_
