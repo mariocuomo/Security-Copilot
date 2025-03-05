@@ -42,7 +42,7 @@ This plugin enables you to track how many logins there have been to the Security
 
 ## SCREENSHOTS
 <div align="center">
-  <img src="https://github.com/mariocuomo/Security-Copilot/blob/main/Images/Community%20Plugins/WatchlistKQL/TrustedUserWatchlist.png" width="700"> </img>
+  <img src="https://github.com/mariocuomo/Security-Copilot/blob/main/Images/Community%20Plugins/SecurityCopilotLogins/LoginsAndAnomalies.png" width="700"> </img>
 </div>
 
 
