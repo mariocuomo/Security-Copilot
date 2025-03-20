@@ -60,8 +60,7 @@ Looking over these alerts, I can see that it includes a few of the same users. R
 ```
 /AskGPT For each user, write a concise, actionable summary addressed to their manager. Begin the summary with the user's User Principal Name (UPN). Highlight significant trends, behaviors, or issues observed in their DLP alerts using chain-of-thought reasoning to identify patterns, similarities, or contributing factors across the alerts. Provide clear, actionable recommendations to mitigate risk, prioritize incidents, and improve compliance.
 ```
-![Image](./images/002_module2_summarize_reason_and_reccomend.png)
-
+![Image](./images/002_module2_summarize_reason_and_recommend.png)
 ### Creating links from alert IDs
 
 Being satisfied with the summarizing, reasoning, and recommendations output, I'd like to include clickable links that make it easier to view the actual alert. While the initial output does not include a clickable link, it does include the Alert ID.
