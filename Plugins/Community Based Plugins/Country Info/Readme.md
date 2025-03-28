@@ -44,7 +44,7 @@ The external dataset is [Country Codes](https://github.com/datasets/country-code
 
 ## SCREENSHOTS
 <div align="center">
-  <img src="https://github.com/mariocuomo/Security-Copilot/blob/main/Images/Community%20Plugins/WatchlistKQL/TrustedUserWatchlist.png" width="700"> </img>
+  <img src="https://github.com/mariocuomo/Security-Copilot/blob/main/Images/Community%20Plugins/CountryCodes/CountryCode.png" width="700"> </img>
 </div>
 
 For more information, see: [Security Copilot Plugin: Country Info](https://rodtrent.substack.com/p/copilot-for-security-plugin-country)
