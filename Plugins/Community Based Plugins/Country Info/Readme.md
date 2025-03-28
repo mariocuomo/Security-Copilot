@@ -1,7 +1,7 @@
 # Country Info via Sentinel
 
 ## DESCRIPTION
-This plugin demonstrates how to retrieve Country information using a publicly available database via Microsoft Sentinel KQL query.
+This plugin demonstrates how to retrieve Country information using a publicly available database via Microsoft Sentinel KQL query. <br>
 The external dataset is [Country Codes](https://github.com/datasets/country-codes), from [Curated open data](https://github.com/datasets)
 
 ---
