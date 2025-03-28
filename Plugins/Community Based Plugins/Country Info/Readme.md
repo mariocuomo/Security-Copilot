@@ -38,7 +38,7 @@ The external dataset is [Country Codes](https://github.com/datasets/country-code
 
 ## SAMPLE PROMPTS
 
-- `« What is the contry code for Taiwan? »`
+- `« What is the country code for Taiwan? »`
 - `« What's the languages for Taiwan? »`
 ---
 
