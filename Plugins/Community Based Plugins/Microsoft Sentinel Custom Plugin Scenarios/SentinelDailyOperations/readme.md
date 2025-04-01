@@ -1,15 +1,46 @@
-# Security Copilot Custom Plugin - Sentinel KQL - SentinelDailyOperations
+# Sentinel Daily Operations
 
-### Pre-requisites
+## DESCRIPTION
+This plugin aids in comprehending the recommended approach of integrating multiple related skills into a single plugin. The provided code sample demonstrates the combination of two skills to retrieve information from few Sentinel tables. You can further expand upon this example to extract additional details from custom tables etc.
 
-* [Security Copilot Enabled](https://learn.microsoft.com/en-us/security-copilot/get-started-security-copilot#onboarding-to-microsoft-security-copilot)
-* [Access to upload custom plugins](https://learn.microsoft.com/en-us/security-copilot/manage-plugins?tabs=securitycopilotplugin#managing-custom-plugins)
-* [Microsoft Sentinel Workspace](https://learn.microsoft.com/en-us/azure/sentinel/quickstart-onboard) created.
-* Parameters for KQL Plugin - Microsoft Sentinel Workspace Name, Subscription ID, Resource Group Name and Entra Tenant ID
+---
 
-### Instructions
-#### Upload the Custom Plugin
+## TYPE AND REQUIREMENTS
+**TYPE**: KQL (Sentinel) <br>
+**SOURCE**: _SigninLogs_ table <br>
+**REQUIREMENTS**: Log Analytics Workspace with Sentinel enabled 
 
-1. Obtain the file [KQL_SentinelDailyOperationsSample.yaml](https://github.com/Azure/Copilot-For-Security/blob/main/Plugins/Community%20Based%20Plugins/Microsoft%20Sentinel%20Custom%20Plugin%20Scenarios/SentinelDailyOperations/KQL_SentinelDailyOperationsSample.yml) from this directory.
-2. Modify the yaml file to specify your specific Entra `TentantId`, `SubscriptionId`, `ResourceGroupName` and `WorkspaceName` for your Sentinel instance.
-3. Upload the custom plugin
+---
+
+## SKILLS
+
+<table>
+  <tbody>
+    <tr>
+      <th>SkillName</th>
+      <th align="center">Description</th>
+      <th align="center">Parameters</th>
+    </tr>
+    <tr>
+      <td><b>Top10FailedSigninsByApp</b></td>
+      <td align="center">Get the top 10 Most Failed SignIn App in the last 24 hours.</td>
+      <td>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+---
+
+## SAMPLE PROMPTS
+
+- `« Retrieve the 10 apps with the most number of failed logins. Based on the App's name infer what they are used for with a simple description »`
+- `« Retrieve the 10 apps with the most number of failed logins. Suggest me how to investigate. » `
+---
+
+## SCREENSHOTS
+<div align="center">
+  <img src="https://github.com/Azure/Security-Copilot/tree/main/Images/Community%20Plugins/DefenderDailyOperations/GetLatestEmailsByRecipient.png" width="700"> </img>
+  <img src="https://github.com/Azure/Security-Copilot/tree/main/Images/Community%20Plugins/DefenderDailyOperations/GetDefenderDevices.png" width="700"> </img>
+</div>
