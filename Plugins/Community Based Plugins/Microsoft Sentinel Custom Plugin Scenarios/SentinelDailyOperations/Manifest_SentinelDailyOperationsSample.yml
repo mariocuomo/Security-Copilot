@@ -1,0 +1,22 @@
+Descriptor:
+  Name: SentinelDailyOperations
+  DisplayName: Sentinel Daily Operations
+  Description:  Sentinel Scenarios we use repeatedly for our daily operations.
+SkillGroups:
+  - Format: KQL
+    Skills:
+      - Name: Top10FailedSigninsByApp
+        DisplayName: Get Top 10 Most Failed SignIn App
+        Description: Get the top 10 Most Failed SignIn App in the last 24 hours.     
+        Settings: 
+          Target: Sentinel
+          TenantId: <your_tenant_ID>
+          SubscriptionId: <your_subscription_ID>
+          ResourceGroupName: <your_RG_name>
+          WorkspaceName: <your_WS_name>
+          Template: |-                    	          
+            SigninLogs
+            | where TimeGenerated > ago(24h)
+            | where ResultSignature == "FAILURE"
+            | summarize count() by AppDisplayName
+            | top 10 by count_
