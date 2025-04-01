@@ -41,6 +41,6 @@ This plugin aids in comprehending the recommended approach of integrating multip
 
 ## SCREENSHOTS
 <div align="center">
-  <img src="https://github.com/Azure/Security-Copilot/tree/main/Images/Community%20Plugins/DefenderDailyOperations/GetLatestEmailsByRecipient.png" width="700"> </img>
-  <img src="https://github.com/Azure/Security-Copilot/tree/main/Images/Community%20Plugins/DefenderDailyOperations/GetDefenderDevices.png" width="700"> </img>
+  <img src="https://github.com/mariocuomo/Security-Copilot/blob/main/Images/Community%20Plugins/SentinelDailyOperations/FailedLoginDescription.png" width="700"> </img>
+  <img src="https://github.com/mariocuomo/Security-Copilot/blob/main/Images/Community%20Plugins/SentinelDailyOperations/FailedLoginSuggestion.png" width="700"> </img>
 </div>
